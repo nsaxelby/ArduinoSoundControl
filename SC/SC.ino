@@ -11,6 +11,8 @@
 #define Rot_3_SW 38
 #define Rot_3_DT 37
 
+#define Brightness 49
+
 #define LCD_Contrast_pin 3
 
 #include <LiquidCrystal.h>
@@ -22,9 +24,18 @@ Rotary rotary3 = Rotary(Rot_3_CLK, Rot_3_DT);
 
 String cmdString = "";
 
+int secondsOfInactivityShutOff = 10;
+
+unsigned long timeOfEvent;
+
 unsigned long lastButtonPress = 0;
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 void setup() {
+  timeOfEvent = millis();
+
+  pinMode(Brightness, OUTPUT);
+  digitalWrite(Brightness,1);
+  
   // Set Contrast of LCD to white
   pinMode(LCD_Contrast_pin, OUTPUT);
   analogWrite(LCD_Contrast_pin, 70);
@@ -73,8 +84,11 @@ void loop() {
   processEncoder2();
   processEncoder3();
 
-  // Put in a slight delay to help debounce the reading
-  //delay(5);
+  if(timeOfEvent + 1000 * secondsOfInactivityShutOff < millis())
+  {
+    // Shut off display aftter doing nothing for 10s
+    digitalWrite(Brightness,0);
+  }
 }
 
 void processEncoder1()
@@ -82,11 +96,13 @@ void processEncoder1()
   unsigned char result = rotary1.process();
   if(result == DIR_CCW)
   {
+    eventWake();
     Serial.print("UP-1;");
   }
   else if(result == DIR_CW)
   {
     // Encoder is rotating CW so increment
+    eventWake();
     Serial.print("DOWN-1;");
   }
   
@@ -99,6 +115,7 @@ void processEncoder1()
     //button has been pressed, released and pressed again
     if (millis() - lastButtonPress > 50)
     {
+      eventWake();
       Serial.print("PRESS-1;");
     }
   
@@ -112,11 +129,13 @@ void processEncoder2()
   unsigned char result = rotary2.process();
   if(result == DIR_CCW)
   {
+    eventWake();
     Serial.print("UP-2;");
   }
   else if(result == DIR_CW)
   {
     // Encoder is rotating CW so increment
+    eventWake();
     Serial.print("DOWN-2;");
   }
   
@@ -130,6 +149,7 @@ void processEncoder2()
     //button has been pressed, released and pressed again
     if (millis() - lastButtonPress > 50)
     {
+      eventWake();
       Serial.print("PRESS-2;");
     }
   
@@ -143,10 +163,12 @@ void processEncoder3()
   unsigned char result = rotary3.process();
   if(result == DIR_CCW)
   {
+    eventWake();
     Serial.print("UP-3;");
   }
   else if(result == DIR_CW)
   {
+    eventWake();
     // Encoder is rotating CW so increment
     Serial.print("DOWN-3;");
   }
@@ -160,6 +182,7 @@ void processEncoder3()
     //button has been pressed, released and pressed again
     if (millis() - lastButtonPress > 50)
     {
+      eventWake();
       Serial.print("PRESS-3;");
     }
   
@@ -171,6 +194,8 @@ void processEncoder3()
 // Available commands : ROW1: or ROW2:
 void processCommand(String command)
 {
+  eventWake();
+  timeOfEvent = millis();
   if(command.startsWith("ROW1:"))
   {
     displayRow1(command.substring(5));
@@ -216,4 +241,10 @@ String padStringTo16(String strIn)
     strIn += " ";
   }
   return strIn;
+}
+
+void eventWake()
+{
+  timeOfEvent = millis();
+  digitalWrite(Brightness,1);
 }
