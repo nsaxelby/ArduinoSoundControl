@@ -5,8 +5,9 @@ namespace ArduinoVolumeTrayApp
 {
 	class ContextMenus
 	{
-		bool isAboutLoaded = false;
-		bool isSettingsLoaded = false;
+		bool _isAboutLoaded = false;
+		bool _isSettingsLoaded = false;
+		ToolStripLabel _statusLabel;
 
 		public ContextMenuStrip Create()
 		{
@@ -28,9 +29,9 @@ namespace ArduinoVolumeTrayApp
 			sep = new ToolStripSeparator();
 			menu.Items.Add(sep);
 
-			var statusLabelItem = new ToolStripLabel();
-			statusLabelItem.Text = "Status";
-			menu.Items.Add(statusLabelItem);
+			_statusLabel = new ToolStripLabel();
+			_statusLabel.Text = "Status";
+			menu.Items.Add(_statusLabel);
 
 			sep = new ToolStripSeparator();
 			menu.Items.Add(sep);
@@ -45,21 +46,21 @@ namespace ArduinoVolumeTrayApp
 
 		void Settings_Click(object sender, EventArgs e)
 		{
-			if(!isSettingsLoaded)
+			if(!_isSettingsLoaded)
             {
-				isSettingsLoaded = true;
+				_isSettingsLoaded = true;
 				new SettingsForm().ShowDialog();
-				isSettingsLoaded = false;
+				_isSettingsLoaded = false;
             }
 		}
 
 		void About_Click(object sender, EventArgs e)
 		{
-			if (!isAboutLoaded)
+			if (!_isAboutLoaded)
 			{
-				isAboutLoaded = true;
+				_isAboutLoaded = true;
 				new AboutForm().ShowDialog();
-				isAboutLoaded = false;
+				_isAboutLoaded = false;
 			}
 		}
 

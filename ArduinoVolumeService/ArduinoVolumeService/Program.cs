@@ -3,7 +3,7 @@ using System.IO.Ports;
 using System.Threading;
 using NAudio.CoreAudioApi;
 
-namespace ArduinoVolumeService
+namespace ArduinoVolumeConsole
 {
     public class Program
     {
@@ -17,22 +17,7 @@ namespace ArduinoVolumeService
         {
             string message;
             StringComparer stringComparer = StringComparer.OrdinalIgnoreCase;
-            Thread readThread = new Thread(Read);
-
-            // Create a new SerialPort object with default settings.
-            _serialPort = new SerialPort();
-
-            // Allow the user to set the appropriate properties.
-            _serialPort.PortName = "COM3";
-
-            // Set the read/write timeouts
-            _serialPort.ReadTimeout = 500;
-            _serialPort.WriteTimeout = 500;
-            _serialPort.NewLine = ";";
-
-            _serialPort.Open();
             _continue = true;
-            readThread.Start();
 
             var deviceEnumerator = new MMDeviceEnumerator();
             device = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
@@ -56,9 +41,6 @@ namespace ArduinoVolumeService
                         String.Format(": {0}", message));
                 }
             }
-
-            readThread.Join();
-            _serialPort.Close();
         }
 
         private static void AudioEndpointVolume_OnVolumeNotification(AudioVolumeNotificationData data)
@@ -87,46 +69,6 @@ namespace ArduinoVolumeService
             string row2line = "ROW2:" + "-----MUTED------;";
             Console.WriteLine(row2line);
             _serialPort.Write(row2line);
-        }
-
-        public static void Read()
-        {
-            while (_continue)
-            {
-                try
-                {
-                    string message = _serialPort.ReadLine();
-                    ProcessMessage(message);
-                    Console.WriteLine(message);
-                }
-                catch (TimeoutException) { }
-            }
-        }
-
-        private static void ProcessMessage(string message)
-        {
-            if(message.StartsWith("UP-1") || message.StartsWith("DOWN-1") || message.StartsWith("PRESS-1"))
-            {
-                ProcessCommandForEnc1(message);
-            }
-            else if (message.StartsWith("UP-2") || message.StartsWith("DOWN-2") || message.StartsWith("PRESS-2"))
-            {
-                ProcessCommandForEnc2(message);
-            }   
-            else if(message.StartsWith("UP-3") || message.StartsWith("DOWN-3") || message.StartsWith("PRESS-3"))
-            {
-                ProcessCommandForEnc3(message);
-            }
-        }
-
-        private static void ProcessCommandForEnc3(string message)
-        {
-
-        }
-
-        private static void ProcessCommandForEnc2(string message)
-        {
-
         }
 
         private static void ProcessCommandForEnc1(string message)

@@ -7,24 +7,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ArduinoVolumeService
+namespace ArduinoVolumeConsole
 {
-    public class ArduinoVolumeService
+    public class ArduinoVolumeConsole
     {
         static bool _continue;
         static SerialPort _serialPort;
         static float _volAdjustAmountInc = 0.05f;
         static float _volAdjustAmountDec = 0.05f;
         static MMDevice device;
-
-        public ArduinoVolumeService()
-        {
-
-        }
-
-
-
-        static void Main(string[] args)
+        void Main(string[] args)
         {
             string message;
             StringComparer stringComparer = StringComparer.OrdinalIgnoreCase;

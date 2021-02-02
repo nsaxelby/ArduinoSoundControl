@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text;
 
-namespace ArduinoVolumeService.Tests
+namespace ArduinoVolumeConsole.Tests
 {
     [TestClass()]
     public class UtilTests
