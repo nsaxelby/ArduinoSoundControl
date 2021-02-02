@@ -1,17 +1,28 @@
-﻿using System;
+﻿using NAudio.CoreAudioApi;
+using System;
+using System.Collections.Generic;
 using System.IO.Ports;
+using System.Linq;
+using System.Text;
 using System.Threading;
-using NAudio.CoreAudioApi;
+using System.Threading.Tasks;
 
 namespace ArduinoVolumeService
 {
-    public class Program
+    public class ArduinoVolumeService
     {
         static bool _continue;
         static SerialPort _serialPort;
         static float _volAdjustAmountInc = 0.05f;
         static float _volAdjustAmountDec = 0.05f;
         static MMDevice device;
+
+        public ArduinoVolumeService()
+        {
+
+        }
+
+
 
         static void Main(string[] args)
         {
@@ -105,15 +116,15 @@ namespace ArduinoVolumeService
 
         private static void ProcessMessage(string message)
         {
-            if(message.StartsWith("UP-1") || message.StartsWith("DOWN-1") || message.StartsWith("PRESS-1"))
+            if (message.StartsWith("UP-1") || message.StartsWith("DOWN-1") || message.StartsWith("PRESS-1"))
             {
                 ProcessCommandForEnc1(message);
             }
             else if (message.StartsWith("UP-2") || message.StartsWith("DOWN-2") || message.StartsWith("PRESS-2"))
             {
                 ProcessCommandForEnc2(message);
-            }   
-            else if(message.StartsWith("UP-3") || message.StartsWith("DOWN-3") || message.StartsWith("PRESS-3"))
+            }
+            else if (message.StartsWith("UP-3") || message.StartsWith("DOWN-3") || message.StartsWith("PRESS-3"))
             {
                 ProcessCommandForEnc3(message);
             }
@@ -131,7 +142,7 @@ namespace ArduinoVolumeService
 
         private static void ProcessCommandForEnc1(string message)
         {
-            if(message.StartsWith("UP"))
+            if (message.StartsWith("UP"))
             {
                 if (device.AudioEndpointVolume.Mute == true)
                 {
@@ -148,17 +159,17 @@ namespace ArduinoVolumeService
                     device.AudioEndpointVolume.MasterVolumeLevelScalar = volume;
                 }
             }
-            else if(message.StartsWith("DOWN"))
+            else if (message.StartsWith("DOWN"))
             {
                 float volume;
                 volume = device.AudioEndpointVolume.MasterVolumeLevelScalar - _volAdjustAmountDec;
-                if(volume <= 0F)
+                if (volume <= 0F)
                 {
                     volume = 0F;
                 }
                 device.AudioEndpointVolume.MasterVolumeLevelScalar = volume;
             }
-            else if(message.StartsWith("PRESS"))
+            else if (message.StartsWith("PRESS"))
             {
                 device.AudioEndpointVolume.Mute = !device.AudioEndpointVolume.Mute;
             }
