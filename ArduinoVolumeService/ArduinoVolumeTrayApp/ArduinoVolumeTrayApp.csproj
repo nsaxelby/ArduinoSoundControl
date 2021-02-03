@@ -39,6 +39,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NAudio, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.10.0\lib\net35\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -58,6 +61,7 @@
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ContextMenus.cs" />
+    <Compile Include="IContextMenuEventListener.cs" />
     <Compile Include="SysTrayApp.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -86,7 +90,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources\iconfinder_audio_console_44847.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ArduinoVolumeLib\ArduinoVolumeLib.csproj">
+      <Project>{bf168944-21cf-4376-865f-2b6629813bb1}</Project>
+      <Name>ArduinoVolumeLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -44,8 +44,9 @@
     <Compile Include="CommandsEnum.cs" />
     <Compile Include="SerialConnector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StateChangeEventArgs.cs" />
-    <Compile Include="SerialState.cs" />
+    <Compile Include="SerialStateChangeEventArgs.cs" />
+    <Compile Include="SerialStateEnum.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

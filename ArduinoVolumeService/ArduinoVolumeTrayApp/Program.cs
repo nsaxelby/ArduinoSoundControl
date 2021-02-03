@@ -12,8 +12,6 @@ namespace ArduinoVolumeTrayApp
             // Show the system tray icon.
             using (SysTrayApp pi = new SysTrayApp())
             {
-                pi.Display();
-
                 // Make sure the application runs!
                 Application.Run();
             }

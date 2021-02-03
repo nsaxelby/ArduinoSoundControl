@@ -2,12 +2,12 @@
 
 namespace ArduinoVolumeLib
 {
-    public class StateChangeEventArgs : EventArgs
+    public class SerialStateChangeEventArgs : EventArgs
     {
         public SerialStateEnum State { get; set; }
         public string Message { get; set; }
         public string PortName { get; set; }
-        public StateChangeEventArgs(string message, SerialStateEnum state, string portName)
+        public SerialStateChangeEventArgs(string message, SerialStateEnum state, string portName)
         {
             State = state;
             Message = message;

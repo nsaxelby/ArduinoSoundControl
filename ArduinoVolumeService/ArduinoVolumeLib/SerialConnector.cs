@@ -1,22 +1,27 @@
 ﻿using System;
 using System.IO.Ports;
+using System.Text;
 using System.Threading;
 
 namespace ArduinoVolumeLib
 {
     public class SerialConnector
     {
-        public event EventHandler<StateChangeEventArgs> StateChangeEvent;
+        public event EventHandler<SerialStateChangeEventArgs> StateChangeEvent;
         public event EventHandler<CommandFromArduinoEventArgs> CommandReceivedEvent;
-        static SerialPort _serialPort;
-        Thread _readThread;
-        static bool _continue;
+
+        private SerialPort _serialPort;
+        private Thread _readThread;
+        static bool _continue = true;
 
         public SerialConnector()
         {
-            _serialPort.ReadTimeout = 500;
-            _serialPort.WriteTimeout = 500;
-            _serialPort.NewLine = ";";
+            _serialPort = new SerialPort
+            {
+                ReadTimeout = 500,
+                WriteTimeout = 500,
+                NewLine = ";"
+            };
         }
 
         public bool Connect()
@@ -30,6 +35,22 @@ namespace ArduinoVolumeLib
             return false;
         }
 
+        public void Disconnect()
+        {
+            try
+            {
+                _continue = false;
+                if (_serialPort.IsOpen)
+                {
+                    _serialPort.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to disconnect smoothly: " + ex.Message);
+            }
+        }
+
         public void Read()
         {
             while (_continue)
@@ -41,6 +62,7 @@ namespace ArduinoVolumeLib
                     Console.WriteLine(message);
                 }
                 catch (TimeoutException) { }
+                catch (Exception) { }
             }
         }
 
@@ -85,11 +107,11 @@ namespace ArduinoVolumeLib
         {
             if (_serialPort.IsOpen == false)
             {
-                RaiseStateChangeEvent(new StateChangeEventArgs("Started Connecting via Connect() Method", SerialStateEnum.Connecting, ""));
+                RaiseStateChangeEvent(new SerialStateChangeEventArgs("Started Connecting via Connect() Method", SerialStateEnum.Connecting, ""));
 
                 if (SerialPort.GetPortNames().Length == 0)
                 {
-                    RaiseStateChangeEvent(new StateChangeEventArgs("No COM ports found", SerialStateEnum.Error, "ALL"));
+                    RaiseStateChangeEvent(new SerialStateChangeEventArgs("No COM ports found", SerialStateEnum.Error, "ALL"));
                     return false;
                 }
 
@@ -97,14 +119,14 @@ namespace ArduinoVolumeLib
                 {
                     if (TryConnectArduino(portName) == true)
                     {
-                        RaiseStateChangeEvent(new StateChangeEventArgs("Connected on Port : " + portName, SerialStateEnum.Connected, portName));
+                        RaiseStateChangeEvent(new SerialStateChangeEventArgs("Connected on Port : " + portName, SerialStateEnum.Connected, portName));
                         break;
                     }
                 }
 
-                if (_serialPort.IsOpen)
+                if (_serialPort.IsOpen == false)
                 {
-                    RaiseStateChangeEvent(new StateChangeEventArgs("Failed to connect on any COM Ports", SerialStateEnum.Error, "ALL"));
+                    RaiseStateChangeEvent(new SerialStateChangeEventArgs("Failed to connect on any COM Ports", SerialStateEnum.Error, "ALL"));
                     return false;
                 }
             }
@@ -113,7 +135,7 @@ namespace ArduinoVolumeLib
 
         private bool TryConnectArduino(string portName)
         {
-            RaiseStateChangeEvent(new StateChangeEventArgs("Trying to Connect to :" + portName, SerialStateEnum.Connecting, portName));
+            RaiseStateChangeEvent(new SerialStateChangeEventArgs("Trying to Connect to :" + portName, SerialStateEnum.Connecting, portName));
             try
             {
                 _serialPort.PortName = portName;
@@ -132,23 +154,31 @@ namespace ArduinoVolumeLib
                     }
                     else
                     {
+                        if(_serialPort.IsOpen)
+                        {
+                            _serialPort.Close();
+                        }
                         return false;
                     }
                 }
             }
             catch (Exception ex)
             {
+                if (_serialPort.IsOpen)
+                {
+                    _serialPort.Close();
+                }
                 Console.WriteLine("Didn't connect to: " + portName + " - " + ex.Message);
                 return false;
             }
         }
 
-        protected virtual void RaiseStateChangeEvent(StateChangeEventArgs e)
+        protected virtual void RaiseStateChangeEvent(SerialStateChangeEventArgs e)
         {
             // Make a temporary copy of the event to avoid possibility of
             // a race condition if the last subscriber unsubscribes
             // immediately after the null check and before the event is raised.
-            EventHandler<StateChangeEventArgs> raiseEvent = StateChangeEvent;
+            EventHandler<SerialStateChangeEventArgs> raiseEvent = StateChangeEvent;
 
             // Event will be null if there are no subscribers
             if (raiseEvent != null)
@@ -169,6 +199,35 @@ namespace ArduinoVolumeLib
             {
                 raiseEvent(this, e);
             }
+        }
+
+        public void SendMVolChange(String deviceName, float inputVol)
+        {
+            if (_serialPort.IsOpen)
+            {
+                deviceName = Util.NormalizeNameForRow(deviceName);
+                _serialPort.Write("ROW1:" + deviceName + ";");
+                string row2line = "ROW2:" + Util.VolumeToRow2Bars(inputVol * 100) + ";";
+                Console.WriteLine(row2line);
+                _serialPort.Write(row2line);
+            }
+        }
+
+        public void SendMutedChange(String deviceName)
+        {
+            if (_serialPort.IsOpen)
+            {
+                deviceName = Util.NormalizeNameForRow(deviceName);
+                _serialPort.Write("ROW1:" + deviceName + ";");
+                string row2line = "ROW2:" + "-----MUTED------;";
+                Console.WriteLine(row2line);
+                _serialPort.Write(row2line);
+            }
+        }
+
+        public bool IsConnected()
+        {
+            return _serialPort.IsOpen;
         }
     }
 }
