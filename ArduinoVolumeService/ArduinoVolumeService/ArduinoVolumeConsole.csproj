@@ -53,11 +53,16 @@
     <Compile Include="ArduinoVolumeConsole.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ArduinoVolumeLib\ArduinoVolumeLib.csproj">
+      <Project>{bf168944-21cf-4376-865f-2b6629813bb1}</Project>
+      <Name>ArduinoVolumeLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

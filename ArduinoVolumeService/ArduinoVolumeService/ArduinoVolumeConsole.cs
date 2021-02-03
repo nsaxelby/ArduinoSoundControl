@@ -1,4 +1,5 @@
-﻿using NAudio.CoreAudioApi;
+﻿using ArduinoVolumeLib;
+using NAudio.CoreAudioApi;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;

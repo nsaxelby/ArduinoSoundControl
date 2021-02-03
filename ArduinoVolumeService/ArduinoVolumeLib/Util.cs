@@ -3,7 +3,7 @@ using System.Text;
 
 namespace ArduinoVolumeLib
 {
-    class Util
+    public static class Util
     {
         public static string VolumeToRow2Bars(float inputVol)
         {

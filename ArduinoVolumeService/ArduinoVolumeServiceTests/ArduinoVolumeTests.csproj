@@ -63,9 +63,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ArduinoVolumeService\ArduinoVolumeConsole.csproj">
-      <Project>{B57D5E1A-D29F-4929-918C-D886015EF9EF}</Project>
-      <Name>ArduinoVolumeConsole</Name>
+    <ProjectReference Include="..\ArduinoVolumeLib\ArduinoVolumeLib.csproj">
+      <Project>{bf168944-21cf-4376-865f-2b6629813bb1}</Project>
+      <Name>ArduinoVolumeLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

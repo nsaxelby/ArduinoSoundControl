@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text;
+using ArduinoVolumeLib;
 
 namespace ArduinoVolumeConsole.Tests
 {
@@ -57,6 +58,18 @@ namespace ArduinoVolumeConsole.Tests
                 sb.Append(blankChar);
             }
             return sb.ToString();
+        }
+
+        [TestMethod()]
+        public void NormalizeNameForRow_Shorten()
+        {
+            Assert.AreEqual(Util.NormalizeNameForRow("123456789123456789"), "1234567891234567");
+        }
+
+        [TestMethod()]
+        public void NormalizeNameForRow_Lengthen()
+        {
+            Assert.AreEqual(Util.NormalizeNameForRow("1234567"), "1234567         ");
         }
     }
 }

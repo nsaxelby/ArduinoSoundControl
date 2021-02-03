@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoVolumeConsole", "ArduinoVolumeService\ArduinoVolumeConsole.csproj", "{B57D5E1A-D29F-4929-918C-D886015EF9EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoVolumeServiceTests", "ArduinoVolumeServiceTests\ArduinoVolumeServiceTests.csproj", "{331C3E07-A363-4816-A43A-D9814194B178}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoVolumeTests", "ArduinoVolumeServiceTests\ArduinoVolumeTests.csproj", "{331C3E07-A363-4816-A43A-D9814194B178}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoVolumeTrayApp", "ArduinoVolumeTrayApp\ArduinoVolumeTrayApp.csproj", "{6C3FD9F7-34CE-433B-8700-E62DD9109B8D}"
 EndProject

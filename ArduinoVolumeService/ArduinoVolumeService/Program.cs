@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Ports;
+using ArduinoVolumeLib;
 using NAudio.CoreAudioApi;
 
 namespace ArduinoVolumeConsole
