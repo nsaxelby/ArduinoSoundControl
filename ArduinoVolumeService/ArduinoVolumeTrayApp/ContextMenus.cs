@@ -7,9 +7,12 @@ namespace ArduinoVolumeTrayApp
 	class ContextMenus
 	{
 		bool _isAboutLoaded = false;
-		ToolStripLabel _statusLabel;
+		ToolStripLabel _serialStatusLabel;
+		ToolStripMenuItem _webBrowseButton;
+		ToolStripLabel _webStatusLabel;
 		public event EventHandler ExitClicked;
 		ContextMenuStrip _menu = new ContextMenuStrip();
+		string _webHostUrl = "http://localhost";
 
 		public ContextMenuStrip Create()
 		{
@@ -25,9 +28,21 @@ namespace ArduinoVolumeTrayApp
 			sep = new ToolStripSeparator();
 			_menu.Items.Add(sep);
 
-			_statusLabel = new ToolStripLabel();
-			_statusLabel.Text = "Status";
-			_menu.Items.Add(_statusLabel);
+			_serialStatusLabel = new ToolStripLabel();
+			_serialStatusLabel.Text = "Serial Status";
+			_menu.Items.Add(_serialStatusLabel);
+
+			sep = new ToolStripSeparator();
+			_menu.Items.Add(sep);
+
+			_webStatusLabel = new ToolStripLabel();
+			_webStatusLabel.Text = "Web Status";
+			_menu.Items.Add(_webStatusLabel);
+
+			_webBrowseButton = new ToolStripMenuItem();
+			_webBrowseButton.Text = "browse to page n/a";
+            _webBrowseButton.Click += _webBrowseButton_Click;
+			_menu.Items.Add(_webBrowseButton);
 
 			sep = new ToolStripSeparator();
 			_menu.Items.Add(sep);
@@ -40,7 +55,12 @@ namespace ArduinoVolumeTrayApp
 			return _menu;
 		}
 
-		void About_Click(object sender, EventArgs e)
+        private void _webBrowseButton_Click(object sender, EventArgs e)
+        {
+			System.Diagnostics.Process.Start(_webHostUrl);
+		}
+
+        void About_Click(object sender, EventArgs e)
 		{
 			if (!_isAboutLoaded)
 			{
@@ -62,20 +82,39 @@ namespace ArduinoVolumeTrayApp
             }
 		}
 
-		public void UpdateStatus(SerialStateChangeEventArgs stateChangeEventArgs)
+		public void UpdateSerialStatus(SerialStateChangeEventArgs stateChangeEventArgs)
         {
 			if (_menu.InvokeRequired)
 			{
 				_menu.Invoke(new Action(() =>
 				{
-					_statusLabel.Text = stateChangeEventArgs.State.ToString() + " " + stateChangeEventArgs.PortName;
+					_serialStatusLabel.Text = "Serial: " + stateChangeEventArgs.State.ToString() + " " + stateChangeEventArgs.PortName;
 				}));
 			}
 			else
 			{
-				_statusLabel.Text = stateChangeEventArgs.State.ToString() + " " + stateChangeEventArgs.PortName;
+				_serialStatusLabel.Text = "Serial: " + stateChangeEventArgs.State.ToString() + " " + stateChangeEventArgs.PortName;
 			}
 			
         }
+
+		public void UpdateWebConnectorStatus(WebConnectorStateChangeEventArgs webStateArgs)
+        {
+			if (_menu.InvokeRequired)
+			{
+				_menu.Invoke(new Action(() =>
+				{
+					_webStatusLabel.Text = "Web: " + webStateArgs.State.ToString();
+					_webHostUrl = webStateArgs.Url;
+					_webBrowseButton.Text = webStateArgs.Url;
+				}));
+			}
+			else
+			{
+				_webStatusLabel.Text = "Web: " + webStateArgs.State.ToString();
+				_webHostUrl = webStateArgs.Url;
+				_webBrowseButton.Text = webStateArgs.Url;
+			}
+		}
 	}
 }

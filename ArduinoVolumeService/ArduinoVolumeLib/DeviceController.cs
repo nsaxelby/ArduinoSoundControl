@@ -18,10 +18,16 @@ namespace ArduinoVolumeLib
             var deviceEnumerator = new MMDeviceEnumerator();
 
             // Always initiate Encoder 1 to Master Volume of the default audio device
-            _devices[0] = new SoundDevice(this, true, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia));
-            // Try initiate always to Microphone
-            _devices[1] = new SoundDevice(this, true, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia));
-            // Find Chrome?
+            if (deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia) != null)
+            {
+                _devices[0] = new SoundDevice(this, true, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia));
+            }
+            // Try initiate always to Microphone if we find one
+            if (deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia) != null)
+            {
+                _devices[1] = new SoundDevice(this, true, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia));
+            }
+            // Find Chrome as default..
             var sessionChrome = FindChrome(deviceEnumerator);
             if(sessionChrome != null)
             {

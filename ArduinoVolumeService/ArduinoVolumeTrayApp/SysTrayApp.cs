@@ -1,5 +1,6 @@
 ﻿using ArduinoVolumeLib;
 using ArduinoVolumeTrayApp.Properties;
+using ArduinoVolumeWebControl;
 using System;
 using System.Threading;
 using System.Windows.Forms;
@@ -12,8 +13,10 @@ namespace ArduinoVolumeTrayApp
 		SerialConnector _serialCon;
 		ContextMenus _contextMenus;
         DeviceController _deviceController;
-       
-        
+        WebConnector _webAccessHost;
+
+        private static string _webHostUrl = "http://localhost:5150";
+
         Thread _connKeepAliveThread;
         bool _continue = true;
         bool _keepConnected = true;
@@ -43,7 +46,16 @@ namespace ArduinoVolumeTrayApp
 
             _connKeepAliveThread = new Thread(KeepConnAlive);
             _connKeepAliveThread.Start();
-		}
+
+            _webAccessHost = new WebConnector(_webHostUrl);
+            _webAccessHost.WebStateChangeEvent += _webAccessHost_WebStateChangeEvent;
+            _webAccessHost.StartWeb();
+        }
+
+        private void _webAccessHost_WebStateChangeEvent(object sender, WebConnectorStateChangeEventArgs e)
+        {
+            _contextMenus.UpdateWebConnectorStatus(e);
+        }
 
         private void _deviceController_DeviceVolChangedEvent(object sender, DeviceVolChangedEventArgs e)
         {
@@ -83,7 +95,7 @@ namespace ArduinoVolumeTrayApp
 
         private void _serialCon_StateChangeEvent(object sender, SerialStateChangeEventArgs e)
         {
-             _contextMenus.UpdateStatus(e);
+             _contextMenus.UpdateSerialStatus(e);
         }
 
         private void _contextMenus_ExitClicked(object sender, EventArgs e)

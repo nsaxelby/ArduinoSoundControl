@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoVolumeTrayApp", "Ard
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoVolumeLib", "ArduinoVolumeLib\ArduinoVolumeLib.csproj", "{BF168944-21CF-4376-865F-2B6629813BB1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoVolumeWebControl", "ArduinoVolumeWebControl\ArduinoVolumeWebControl.csproj", "{3F511221-E8C5-41EB-91A5-6CE1219C8A2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{BF168944-21CF-4376-865F-2B6629813BB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF168944-21CF-4376-865F-2B6629813BB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF168944-21CF-4376-865F-2B6629813BB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F511221-E8C5-41EB-91A5-6CE1219C8A2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F511221-E8C5-41EB-91A5-6CE1219C8A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F511221-E8C5-41EB-91A5-6CE1219C8A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F511221-E8C5-41EB-91A5-6CE1219C8A2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
