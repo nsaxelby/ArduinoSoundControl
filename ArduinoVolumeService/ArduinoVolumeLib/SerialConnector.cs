@@ -40,6 +40,7 @@ namespace ArduinoVolumeLib
             try
             {
                 _continue = false;
+                _readThread.Join();
                 if (_serialPort.IsOpen)
                 {
                     _serialPort.Close();

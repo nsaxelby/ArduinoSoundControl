@@ -109,6 +109,15 @@ namespace ArduinoVolumeTrayApp
             {
 
             }
+
+            try
+            {
+                _webAccessHost.StopWeb();
+            }
+            catch
+            {
+                
+            }
 			Application.Exit();
         }
 

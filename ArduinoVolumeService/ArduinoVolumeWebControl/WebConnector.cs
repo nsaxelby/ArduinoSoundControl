@@ -72,6 +72,11 @@ namespace ArduinoVolumeWebControl
                 raiseEvent(this, e);
             }
         }
+
+        public void StopWeb()
+        {
+            _continue = false;
+        }
     }
 
 
