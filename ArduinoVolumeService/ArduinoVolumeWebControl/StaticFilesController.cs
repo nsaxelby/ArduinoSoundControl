@@ -12,7 +12,7 @@ namespace ArduinoVolumeWebControl
         {
             if (string.IsNullOrWhiteSpace(url))
             {
-                url = "Index.html";
+                url = "index.html";
             }
 
             var path = GeneratePath(url);
@@ -26,9 +26,9 @@ namespace ArduinoVolumeWebControl
             response.Content.Headers.ContentType = new MediaTypeHeaderValue(GetContentTypeFromExtension(url));
             return response;
         }
+
         private static string GeneratePath(string url)
         {
-            //Uri uri = new Uri(url);
             string fileName = Path.GetFileName(url);
             return "StaticFiles/" + fileName;
         }
