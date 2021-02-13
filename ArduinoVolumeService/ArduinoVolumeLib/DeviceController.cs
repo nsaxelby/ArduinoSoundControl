@@ -29,16 +29,18 @@ namespace ArduinoVolumeLib
             }
             // Find Chrome as default..
             var sessionChrome = FindChrome(deviceEnumerator);
-            if(sessionChrome != null)
+            if (sessionChrome != null)
             {
-                _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia),sessionChrome);
+                _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia), sessionChrome);
             }
-
-            var sessionSpotify = FindSpotify(deviceEnumerator);
-            if(sessionSpotify != null)
+            else
             {
-                _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia), sessionSpotify);
+                var sessionSpotify = FindSpotify(deviceEnumerator);
+                if (sessionSpotify != null)
+                {
+                    _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia), sessionSpotify);
 
+                }
             }
         }
 
