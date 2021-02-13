@@ -33,6 +33,30 @@ namespace ArduinoVolumeLib
             {
                 _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia),sessionChrome);
             }
+
+            var sessionSpotify = FindSpotify(deviceEnumerator);
+            if(sessionSpotify != null)
+            {
+                _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia), sessionSpotify);
+
+            }
+        }
+
+        private AudioSessionControl FindSpotify(MMDeviceEnumerator deviceEnumerator)
+        {
+            var coreDevice = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            for (int i = 0; i < coreDevice.AudioSessionManager.Sessions.Count; i++)
+            {
+                var sess = coreDevice.AudioSessionManager.Sessions[i];
+                if (sess.IsSystemSoundsSession == false)
+                {
+                    if (sess.GetSessionIdentifier.Contains("Spotify"))
+                    {
+                        return sess;
+                    }
+                }
+            }
+            return null;
         }
 
         private AudioSessionControl FindChrome(MMDeviceEnumerator deviceEnumerator)
