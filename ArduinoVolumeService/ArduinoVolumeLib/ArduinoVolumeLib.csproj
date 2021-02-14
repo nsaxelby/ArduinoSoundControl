@@ -45,8 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandFromArduinoEventArgs.cs" />
+    <Compile Include="CommandFromWebEventArgs.cs" />
     <Compile Include="VolChangeCommandFromWebEventArgs.cs" />
-    <Compile Include="CommandsEnum.cs" />
+    <Compile Include="SerialCommandsEnum.cs" />
     <Compile Include="DeviceController.cs" />
     <Compile Include="DeviceVolChangedEventArgs.cs" />
     <Compile Include="SerialConnector.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="SerialStateEnum.cs" />
     <Compile Include="SoundDevice.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="WebCommandEnum.cs" />
     <Compile Include="WebConnectorStateChangeEventArgs.cs" />
     <Compile Include="WebStateEnum.cs" />
   </ItemGroup>

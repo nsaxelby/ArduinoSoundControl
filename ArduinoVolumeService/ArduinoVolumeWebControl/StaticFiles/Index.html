@@ -4,12 +4,17 @@
     <meta charset="utf-8" />
     <title>Arudino Sound Control</title>
     <script src="jquery.js" type="text/javascript"></script>
+    <script src="jquery.signalR-2.4.1.min.js"></script>
+
     <script src="bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="bootstrap-slider.js" type="text/javascript"></script>
+
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="bootstrap.css" />
 
-    <script src="bootstrap-slider.js" type="text/javascript"></script>
     <link rel="stylesheet" href="bootstrap-slider.css" />
+
+    <script src="signalr/hubs"></script>
 
     <script src="web.js" type="text/javascript"></script>
 
@@ -23,7 +28,7 @@
             <input id="encoder2" data-slider-id='encoder2' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="50" data-slider-orientation="vertical" />
         </div>
         <div class="slider-wrap">
-                <input id="encoder3" data-slider-id='encoder3' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="50" data-slider-orientation="vertical" />
+            <input id="encoder3" data-slider-id='encoder3' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="50" data-slider-orientation="vertical" />
         </div>
     </div>
 </body>

@@ -1,6 +1,6 @@
 ﻿namespace ArduinoVolumeLib
 {
-    public enum CommandsEnum
+    public enum SerialCommandsEnum
     {
         UP,
         DOWN,

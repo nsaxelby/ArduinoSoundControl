@@ -105,16 +105,21 @@ namespace ArduinoVolumeTrayApp
 				_menu.Invoke(new Action(() =>
 				{
 					_webStatusLabel.Text = "Web: " + webStateArgs.State.ToString();
-					_webHostUrl = webStateArgs.Url;
-					_webBrowseButton.Text = webStateArgs.Url;
+					_webHostUrl = FixUrlPlusSign(webStateArgs.Url);
+					_webBrowseButton.Text = FixUrlPlusSign(webStateArgs.Url);
 				}));
 			}
 			else
 			{
 				_webStatusLabel.Text = "Web: " + webStateArgs.State.ToString();
-				_webHostUrl = webStateArgs.Url;
-				_webBrowseButton.Text = webStateArgs.Url;
+				_webHostUrl = FixUrlPlusSign(webStateArgs.Url);
+				_webBrowseButton.Text = FixUrlPlusSign(webStateArgs.Url);
 			}
 		}
+
+		public string FixUrlPlusSign(string inputURL)
+        {
+			return inputURL.Replace("+:", "localhost:");
+        }
 	}
 }

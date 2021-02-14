@@ -87,19 +87,19 @@ namespace ArduinoVolumeLib
             }
         }
 
-        private static CommandsEnum EnumFromString(string cmd)
+        private static SerialCommandsEnum EnumFromString(string cmd)
         {
             if(cmd.StartsWith("UP"))
             {
-                return CommandsEnum.UP;
+                return SerialCommandsEnum.UP;
             }
             if(cmd.StartsWith("DOWN"))
             {
-                return CommandsEnum.DOWN;
+                return SerialCommandsEnum.DOWN;
             }
             if(cmd.StartsWith("PRESS"))
             {
-                return CommandsEnum.PRESS;
+                return SerialCommandsEnum.PRESS;
             }
             throw new Exception("Unknown command: " + cmd);
         }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
@@ -15,6 +16,7 @@ namespace ArduinoVolumeWebControl
                 url = "index.html";
             }
 
+            var gg = Environment.CurrentDirectory;
             var path = GeneratePath(url);
             var response = new HttpResponseMessage();
             if (File.Exists(path) == false)
@@ -29,8 +31,8 @@ namespace ArduinoVolumeWebControl
 
         private static string GeneratePath(string url)
         {
-            string fileName = Path.GetFileName(url);
-            return "StaticFiles/" + fileName;
+            //var uri = new Uri(url);
+            return "StaticFiles/" + url;
         }
 
         private static string GetContentTypeFromExtension(string url)

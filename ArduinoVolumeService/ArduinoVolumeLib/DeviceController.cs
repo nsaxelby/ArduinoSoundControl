@@ -86,9 +86,38 @@ namespace ArduinoVolumeLib
             }
         }
 
-        internal void VolChangedDevice(string deviceFriendlyName, float masterVolume, bool muted)
+        public void VolumeSet(int deviceNum, int volume)
         {
-            RaiseDeviceVolChangedEvent(new DeviceVolChangedEventArgs(deviceFriendlyName, masterVolume, muted));
+            if (_devices[deviceNum - 1] != null)
+            {
+                _devices[deviceNum - 1].VolumeSet((float)(Convert.ToDecimal(volume) / (decimal)100));
+            }
+        }
+
+        internal void VolChangedDevice(string deviceFriendlyName, float masterVolume, bool muted, string identifier)
+        {
+            int encoderNumber = GetEncoderNumFromID(identifier);
+            RaiseDeviceVolChangedEvent(new DeviceVolChangedEventArgs(deviceFriendlyName, masterVolume, muted, encoderNumber));
+        }
+
+        private int GetEncoderNumFromID(string identifier)
+        {
+            int num = 1;
+            foreach(var device in _devices)
+            {
+                if(device != null)
+                {
+                    if (device.GetDeviceUniqueID() == identifier)
+                    {
+                        return num;
+                    }
+                    else
+                    {
+                        num++;
+                    }
+                }
+            }
+            return -1;
         }
 
         public void VolumeDown(int deviceNum)

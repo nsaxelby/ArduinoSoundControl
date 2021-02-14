@@ -15,7 +15,7 @@ namespace ArduinoVolumeTrayApp
         DeviceController _deviceController;
         WebConnector _webAccessHost;
 
-        private static string _webHostUrl = "http://localhost:5150";
+        private static string _webHostUrl = "http://+:5151/";
 
         Thread _connKeepAliveThread;
         bool _continue = true;
@@ -49,7 +49,28 @@ namespace ArduinoVolumeTrayApp
 
             _webAccessHost = new WebConnector(_webHostUrl);
             _webAccessHost.WebStateChangeEvent += _webAccessHost_WebStateChangeEvent;
+            _webAccessHost.WebCommandEvent += _webAccessHost_WebCommandEvent;
             _webAccessHost.StartWeb();
+        }
+
+        private void _webAccessHost_WebCommandEvent(object sender, CommandFromWebEventArgs e)
+        {
+            switch (e.WebCommand)
+            {
+                case WebCommandEnum.VOLCHANGE:
+                    {
+                        _deviceController.VolumeSet(e.EncoderNumber, e.Volume);
+                    }
+                    break;
+                case WebCommandEnum.MUTED:
+                    break;
+                case WebCommandEnum.UNMUTED:
+                    break;
+                case WebCommandEnum.REBINDENCODER:
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void _webAccessHost_WebStateChangeEvent(object sender, WebConnectorStateChangeEventArgs e)
@@ -62,10 +83,12 @@ namespace ArduinoVolumeTrayApp
             if(e.Muted)
             {
                 _serialCon.SendMutedChange(e.Name);
+                _webAccessHost.SendMutedChangeEnocderNumber(e);
             }
             else
             {
                 _serialCon.SendMVolChange(e.Name, e.Volume);
+                _webAccessHost.SendVolChangedEncoderNumber(e);
             }
         }
 
@@ -73,17 +96,17 @@ namespace ArduinoVolumeTrayApp
         {
             switch (e.Command)
             {
-                case CommandsEnum.UP:
+                case SerialCommandsEnum.UP:
                     {
                         _deviceController.VolumeUp(e.EncoderNumber);
                     }
                     break;
-                case CommandsEnum.DOWN:
+                case SerialCommandsEnum.DOWN:
                     {
                         _deviceController.VolumeDown(e.EncoderNumber);
                     }
                     break;
-                case CommandsEnum.PRESS:
+                case SerialCommandsEnum.PRESS:
                     {
                         _deviceController.Mute(e.EncoderNumber);
                     }

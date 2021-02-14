@@ -34,7 +34,18 @@ namespace ArduinoVolumeLib
 
         private void AudioEndpointVolume_OnVolumeNotification(AudioVolumeNotificationData data)
         {
-            _deviceController.VolChangedDevice(_device.FriendlyName, data.MasterVolume, data.Muted);
+            _deviceController.VolChangedDevice(_device.FriendlyName, data.MasterVolume, data.Muted, GetDeviceUniqueID());
+        }
+        public string GetDeviceUniqueID()
+        {
+            if(this.IsMasterVolumeControlForDevice)
+            {
+                return _device.ID;
+            }
+            else
+            {
+                return _session.GetSessionIdentifier;
+            }
         }
 
         public void VolumeUp(float volAdjustAmountInc)
@@ -83,6 +94,26 @@ namespace ArduinoVolumeLib
             }
         }
 
+        public void VolumeSet(float volume)
+        {
+            if (volume <= 0F)
+            {
+                volume = 0F;
+            }
+            if (volume >= 1F)
+            {
+                volume = 1F;
+            }
+            if (IsMasterVolumeControlForDevice)
+            {
+                _device.AudioEndpointVolume.MasterVolumeLevelScalar = volume;
+            }
+            else
+            {
+                _session.SimpleAudioVolume.Volume = volume;
+            }
+        }
+
         public void Mute()
         {
             if (IsMasterVolumeControlForDevice)
@@ -97,12 +128,12 @@ namespace ArduinoVolumeLib
 
         public void OnVolumeChanged(float volume, bool isMuted)
         {
-            _deviceController.VolChangedDevice(_session.DisplayName, volume, isMuted);
+            _deviceController.VolChangedDevice(_session.DisplayName, volume, isMuted, GetDeviceUniqueID());
         }
 
         public void OnDisplayNameChanged(string displayName)
         {
-            _deviceController.VolChangedDevice(displayName, _session.SimpleAudioVolume.Volume, _session.SimpleAudioVolume.Mute);
+            _deviceController.VolChangedDevice(displayName, _session.SimpleAudioVolume.Volume, _session.SimpleAudioVolume.Mute, GetDeviceUniqueID());
         }
 
         public void OnIconPathChanged(string iconPath)
@@ -112,7 +143,7 @@ namespace ArduinoVolumeLib
 
         public void OnChannelVolumeChanged(uint channelCount, IntPtr newVolumes, uint channelIndex)
         {
-            _deviceController.VolChangedDevice(_session.DisplayName, _session.SimpleAudioVolume.Volume, _session.SimpleAudioVolume.Mute);
+            _deviceController.VolChangedDevice(_session.DisplayName, _session.SimpleAudioVolume.Volume, _session.SimpleAudioVolume.Mute, GetDeviceUniqueID());
         }
 
         public void OnGroupingParamChanged(ref Guid groupingId)
