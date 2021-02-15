@@ -30,6 +30,9 @@ namespace ArduinoVolumeWebControl
         public event EventHandler<CommandFromWebEventArgs> WebCommandEvent;
         public event EventHandler<WebConnectorStateChangeEventArgs> WebStateChangeEvent;
 
+        public int msDelayDontUpdateWeb = 2000;
+        public DateTime dateLastUpdateFromWeb = new DateTime();
+
         public WebConnector(string webUrl)
         {
             _webUrlString = webUrl;
@@ -107,10 +110,15 @@ namespace ArduinoVolumeWebControl
             {
                 raiseEvent(this, e);
             }
+            if (dateLastUpdateFromWeb.AddMilliseconds(msDelayDontUpdateWeb) <= DateTime.Now)
+            {
+                GlobalHost.ConnectionManager.GetHubContext<WebControlHub>().Clients.All.updateVol(e.EncoderNumber, e.Muted, e.Volume * 100);
+            }
         }
 
         public void VolumeChangeFromWeb(int encoder, int volume)
         {
+            dateLastUpdateFromWeb = DateTime.Now;
             RaiseWebCommandEvent(new CommandFromWebEventArgs(encoder, WebCommandEnum.VOLCHANGE, false, volume, false, "", ""));
         }
 
@@ -159,27 +167,14 @@ namespace ArduinoVolumeWebControl
         }
     }
 
-    public class SearchController : ApiController
-    {
-        [HttpGet]
-        public string Search(string query)
-        {
-            return "Test";
-        }
-    }
-
     public class WebControlHub : Hub
     {
         private IWebConnector _webConnector;
+        private Guid _hubGuid = Guid.NewGuid();
         public WebControlHub(IWebConnector webCon)
         {
             _webConnector = webCon;
-            _webConnector.DeviceVolChangedEvent += _webConnector_DeviceVolChangedEvent;
-        }
-
-        private void _webConnector_DeviceVolChangedEvent(object sender, DeviceVolChangedEventArgs e)
-        {
-            Clients.All.updateVol(e.EncoderNumber, e.Muted, e.Volume * 100);
+            Console.WriteLine("Created new hub" + _hubGuid);
         }
 
         public void ChangeVol(int enocder, int volume)
