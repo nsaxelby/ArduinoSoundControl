@@ -49,39 +49,46 @@ namespace ArduinoVolumeWebControl
         {
             RaiseStateChangeEvent(new WebConnectorStateChangeEventArgs("Starting", WebStateEnum.Starting, _webUrlString));
 
-            Console.WriteLine("Starting web server");
-            using (WebApp.Start(_webUrlString, (app) =>
-             {
-                 GlobalHost.DependencyResolver.Register(typeof(WebControlHub), () => new WebControlHub(this));
-
-                 HttpConfiguration config = new HttpConfiguration();
-                 config.Routes.MapHttpRoute(
-                     "API Default", "api/{controller}/{id}",
-                     new { id = RouteParameter.Optional });
-
-                 config.Routes.MapHttpRoute(
-                     "Static", "{*url}",
-                     new { controller = "StaticFiles", action = "Index" });
-
-                 app.UseCors(CorsOptions.AllowAll);
-                 app.MapSignalR("/signalr", new HubConfiguration());
-                 app.UseWebApi(config);
-             }))
+            try
             {
-                Console.WriteLine("Started web server on " + _webUrlString);
-                RaiseStateChangeEvent(new WebConnectorStateChangeEventArgs("Started", WebStateEnum.Running, _webUrlString));
-                while (_continue)
+                Console.WriteLine("Starting web server");
+                using (WebApp.Start(_webUrlString, (app) =>
+                 {
+                     GlobalHost.DependencyResolver.Register(typeof(WebControlHub), () => new WebControlHub(this));
+
+                     HttpConfiguration config = new HttpConfiguration();
+                     config.Routes.MapHttpRoute(
+                         "API Default", "api/{controller}/{id}",
+                         new { id = RouteParameter.Optional });
+
+                     config.Routes.MapHttpRoute(
+                         "Static", "{*url}",
+                         new { controller = "StaticFiles", action = "Index" });
+
+                     app.UseCors(CorsOptions.AllowAll);
+                     app.MapSignalR("/signalr", new HubConfiguration());
+                     app.UseWebApi(config);
+                 }))
                 {
-                    Thread.Sleep(500);
-                    if (_runThread.ThreadState != ThreadState.Running)
+                    Console.WriteLine("Started web server on " + _webUrlString);
+                    RaiseStateChangeEvent(new WebConnectorStateChangeEventArgs("Started", WebStateEnum.Running, _webUrlString));
+                    while (_continue)
                     {
-                        break;
+                        Thread.Sleep(500);
+                        if (_runThread.ThreadState != ThreadState.Running)
+                        {
+                            break;
+                        }
                     }
-                }
-            };
-            
-            Console.WriteLine("Ended web server");
-            RaiseStateChangeEvent(new WebConnectorStateChangeEventArgs("Stopped", WebStateEnum.Stopped, _webUrlString));
+                };
+                Console.WriteLine("Ended web server");
+                RaiseStateChangeEvent(new WebConnectorStateChangeEventArgs("Stopped", WebStateEnum.Stopped, _webUrlString));
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Web server exited with exception: " + ex.Message);
+            }
+            RaiseStateChangeEvent(new WebConnectorStateChangeEventArgs("Error", WebStateEnum.Error, _webUrlString));
         }
 
         protected virtual void RaiseStateChangeEvent(WebConnectorStateChangeEventArgs e)
