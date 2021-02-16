@@ -26,15 +26,15 @@
 		console.log("Connected hub");
 	});
 
-	$("#encoder1").on("slide", function (slideEvt) {
+	$("#encoder1").on("slideStop", function (slideEvt) {
 		hub.server.changeVol(1, slideEvt.value);
 	});
 
-	$("#encoder2").on("slide", function (slideEvt) {
+	$("#encoder2").on("slideStop", function (slideEvt) {
 		hub.server.changeVol(2, slideEvt.value);
 	});
 
-	$("#encoder3").on("slide", function (slideEvt) {
+	$("#encoder3").on("slideStop", function (slideEvt) {
 		hub.server.changeVol(3, slideEvt.value);
 	});
 });
