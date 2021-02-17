@@ -18,6 +18,18 @@
 
     // Create a function that the hub can call to broadcast messages.
 	hub.client.updateVol = function (encnumber, muted, volume) {
+		var muteButonName = "#mutebutton".concat(encnumber);
+		var encoderNumber = "#encoder".concat(encnumber);
+
+		if (muted == true) {
+			$(encoderNumber).addClass("muted-bar");
+			$(muteButonName).prop('value', 'Unmute');
+		}
+		else
+		{
+			$(encoderNumber).removeClass("muted-bar");
+			$(muteButonName).prop('value', 'Mute');
+		}
 		enocdesArr[encnumber - 1].slider('setValue', volume);
     };
 

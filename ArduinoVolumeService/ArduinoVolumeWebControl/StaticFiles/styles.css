@@ -10,12 +10,39 @@ body {
     align-items: center;
 }
 
-
 .slider .slider-track .slider-track-high {
-   background: #BABABA;
+    background: #BABABA;
+}
+
+.slider
+{
+    left: -5px;
+}
+
+.muted-bar .slider-handle {
+    background: grey !important;
+}
+
+.muted-bar .slider-track .slider-selection  {
+    background: lightgray !important;
+}
+
+.muted-bar .slider-track .slider-track-high {
+    background: lightgray !important;
 }
 
 .encoderPanel .slider-wrap
 {
     width: 150px;
+}
+
+.barAlign
+{
+    text-align: center;
+}
+
+.muteBar
+{
+    padding-top: 10px;
+    text-align: center;
 }
