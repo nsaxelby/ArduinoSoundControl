@@ -117,10 +117,14 @@ namespace ArduinoVolumeWebControl
             {
                 raiseEvent(this, e);
             }
-            if (dateLastUpdateFromWeb.AddMilliseconds(msDelayDontUpdateWeb) <= DateTime.Now)
-            {
+            //if (dateLastUpdateFromWeb.AddMilliseconds(msDelayDontUpdateWeb) <= DateTime.Now)
+            //{
                 GlobalHost.ConnectionManager.GetHubContext<WebControlHub>().Clients.All.updateVol(e.EncoderNumber, e.Muted, e.Volume * 100);
-            }
+            //}
+        }
+        protected virtual void DeviceListChangedEvent(DeviceListChangedEventArgs e)
+        {
+            GlobalHost.ConnectionManager.GetHubContext<WebControlHub>().Clients.All.updateVol(e);
         }
 
         public void VolumeChangeFromWeb(int encoder, int volume)
@@ -187,6 +191,11 @@ namespace ArduinoVolumeWebControl
         public void ChangeVol(int enocder, int volume)
         {
             _webConnector.VolumeChangeFromWeb(enocder, volume);
+        }
+
+        public void RequestBoundDevices()
+        {
+
         }
 
         public void MuteEncoder(int encoder, bool mute)

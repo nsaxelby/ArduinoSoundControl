@@ -118,11 +118,35 @@ namespace ArduinoVolumeLib
         {
             if (IsMasterVolumeControlForDevice)
             {
+                _device.AudioEndpointVolume.Mute = true;
+            }
+            else
+            {
+                _session.SimpleAudioVolume.Mute = true;
+            }
+        }
+
+        public void MuteToggle()
+        {
+            if (IsMasterVolumeControlForDevice)
+            {
                 _device.AudioEndpointVolume.Mute = !_device.AudioEndpointVolume.Mute;
             }
             else
             {
                 _session.SimpleAudioVolume.Mute = !_session.SimpleAudioVolume.Mute;
+            }
+        }
+
+        public void UnMute()
+        {
+            if (IsMasterVolumeControlForDevice)
+            {
+                _device.AudioEndpointVolume.Mute = false;
+            }
+            else
+            {
+                _session.SimpleAudioVolume.Mute = false;
             }
         }
 

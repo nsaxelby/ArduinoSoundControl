@@ -1,5 +1,6 @@
 ﻿using NAudio.CoreAudioApi;
 using System;
+using System.Collections.Generic;
 
 namespace ArduinoVolumeLib
 {
@@ -9,13 +10,15 @@ namespace ArduinoVolumeLib
         SoundDevice[] _devices = new SoundDevice[3];
         float _volAdjustAmountInc = 0.05F;
         float _volAdjustAmountDec = 0.05F;
+        MMDeviceEnumerator deviceEnumerator;
 
         public event EventHandler<DeviceVolChangedEventArgs> DeviceVolChangedEvent;
+        public event EventHandler<DeviceListChangedEventArgs> DeviceListChangedEvent;
 
         public DeviceController()
         {
             // Setup audio devices
-            var deviceEnumerator = new MMDeviceEnumerator();
+            deviceEnumerator = new MMDeviceEnumerator();
 
             // Always initiate Encoder 1 to Master Volume of the default audio device
             if (deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia) != null)
@@ -133,6 +136,65 @@ namespace ArduinoVolumeLib
             if (_devices[deviceNum - 1] != null)
             {
                 _devices[deviceNum - 1].Mute();
+            }
+        }
+
+        public void MuteToggle(int deviceNum)
+        {
+            if (_devices[deviceNum - 1] != null)
+            {
+                _devices[deviceNum - 1].MuteToggle();
+            }
+        }
+
+        public void UnMute(int deviceNum)
+        {
+            if (_devices[deviceNum - 1] != null)
+            {
+                _devices[deviceNum - 1].UnMute();
+            }
+        }
+
+        public void RequestDevices()
+        {
+            List<DeviceItem> devices = new List<DeviceItem>();
+            var allDevices = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+            foreach(var dev in allDevices)
+            {
+                DeviceItem di = new DeviceItem(dev.DeviceFriendlyName, dev.ID, GetDeviceEncoderNumberByID(dev.ID));
+                for(int i = 0; i < dev.AudioSessionManager.Sessions.Count; i++)
+                {
+                    var sess = dev.AudioSessionManager.Sessions[i];
+                    SoundSessionItem sessItem = new SoundSessionItem(sess.DisplayName, sess.GetSessionIdentifier, GetDeviceEncoderNumberByID(sess.GetSessionIdentifier));
+                    di.SoundSessions.Add(sessItem);
+                }
+                devices.Add(di);
+            }
+            RaiseDeviceListChangedEvent(new DeviceListChangedEventArgs(devices));
+        }
+
+        public int? GetDeviceEncoderNumberByID(string deviceID)
+        {
+            for(int i = 0; i <_devices.Length; i++)
+            {
+                if(_devices[i] != null)
+                {
+                    if(_devices[i].GetDeviceUniqueID() == deviceID)
+                    {
+                        return i + 1;
+                    }
+                }
+            }
+            return null;
+        }
+
+        protected virtual void RaiseDeviceListChangedEvent(DeviceListChangedEventArgs e)
+        {
+            EventHandler<DeviceListChangedEventArgs> raiseEvent = DeviceListChangedEvent;
+
+            if(raiseEvent != null)
+            {
+                raiseEvent(this, e);
             }
         }
 

@@ -49,4 +49,31 @@
 	$("#encoder3").on("slideStop", function (slideEvt) {
 		hub.server.changeVol(3, slideEvt.value);
 	});
+
+	$("#mutebutton1").on("click", function () {
+		if ($("#mutebutton1").attr("value") == "Mute") {
+			hub.server.muteEncoder(1, true);
+		}
+		else {
+			hub.server.muteEncoder(1, false);
+		}
+	});
+
+	$("#mutebutton2").on("click", function () {
+		if ($("#mutebutton2").attr("value") == "Mute") {
+			hub.server.muteEncoder(2, true);
+		}
+		else {
+			hub.server.muteEncoder(2, false);
+		}
+	});
+
+	$("#mutebutton3").on("click", function () {
+		if ($("#mutebutton3").attr("value") == "Mute") {
+			hub.server.muteEncoder(3, true);
+		}
+		else {
+			hub.server.muteEncoder(3, false);
+		}
+	});
 });

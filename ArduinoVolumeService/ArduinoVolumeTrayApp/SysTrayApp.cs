@@ -63,8 +63,14 @@ namespace ArduinoVolumeTrayApp
                     }
                     break;
                 case WebCommandEnum.MUTED:
+                    {
+                        _deviceController.Mute(e.EncoderNumber);
+                    }
                     break;
                 case WebCommandEnum.UNMUTED:
+                    {
+                        _deviceController.UnMute(e.EncoderNumber);
+                    }
                     break;
                 case WebCommandEnum.REBINDENCODER:
                     break;
@@ -108,7 +114,7 @@ namespace ArduinoVolumeTrayApp
                     break;
                 case SerialCommandsEnum.PRESS:
                     {
-                        _deviceController.Mute(e.EncoderNumber);
+                        _deviceController.MuteToggle(e.EncoderNumber);
                     }
                     break;
                 default:
