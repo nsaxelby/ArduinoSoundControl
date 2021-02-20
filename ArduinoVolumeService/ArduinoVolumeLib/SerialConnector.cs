@@ -148,13 +148,14 @@ namespace ArduinoVolumeLib
                 }
                 else
                 {
+                    _serialPort.DiscardOutBuffer();
                     _serialPort.WriteLine("ECHO:Hello");
                     if(_serialPort.ReadLine() == "ECHO:Hello")
                     {
-                        if (_serialPort.IsOpen)
-                        {
-                            _serialPort.Write("ROW1:" + Util.NormalizeNameForRow("Connected") + ";");
-                        }
+                        //if (_serialPort.IsOpen)
+                        //{
+                        //    _serialPort.Write("ROW1:" + Util.NormalizeNameForRow("Connected"));
+                        //}
                         return true;
                     }
                     else

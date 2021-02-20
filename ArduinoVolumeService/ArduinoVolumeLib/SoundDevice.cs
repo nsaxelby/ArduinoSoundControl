@@ -1,6 +1,7 @@
 ﻿using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
 using System;
+using System.Diagnostics;
 
 namespace ArduinoVolumeLib
 {
@@ -36,6 +37,7 @@ namespace ArduinoVolumeLib
         {
             _deviceController.VolChangedDevice(_device.FriendlyName, data.MasterVolume, data.Muted, GetDeviceUniqueID());
         }
+
         public string GetDeviceUniqueID()
         {
             if(this.IsMasterVolumeControlForDevice)
@@ -56,7 +58,7 @@ namespace ArduinoVolumeLib
             }
             else
             {
-                return _session.DisplayName;
+                return GetSessionNameTitle(_session.GetProcessID);
             }
         }
 
@@ -188,7 +190,20 @@ namespace ArduinoVolumeLib
 
         public void OnVolumeChanged(float volume, bool isMuted)
         {
-            _deviceController.VolChangedDevice(_session.DisplayName, volume, isMuted, GetDeviceUniqueID());
+            _deviceController.VolChangedDevice(GetSessionNameTitle(_session.GetProcessID), volume, isMuted, GetDeviceUniqueID());
+        }
+
+        string GetSessionNameTitle(uint processId)
+        {
+            try
+            {
+                var process = Process.GetProcessById((int)processId);
+                return process.ProcessName;
+            }
+            catch (ArgumentException)
+            {
+                return "Unknown";
+            }
         }
 
         public void OnDisplayNameChanged(string displayName)
