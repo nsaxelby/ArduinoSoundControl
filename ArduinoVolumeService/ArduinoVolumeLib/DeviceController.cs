@@ -131,6 +131,18 @@ namespace ArduinoVolumeLib
             }
         }
 
+        public void GetDeviceStatus(int deviceNum)
+        {
+            if (_devices[deviceNum - 1] != null)
+            {
+                var soundDev = _devices[deviceNum - 1];
+                VolChangedDevice(soundDev.GetDeviceDisplayName(),
+                    soundDev.GetDeviceCurVol(),
+                    soundDev.GetDeviceMuted(),
+                    soundDev.GetDeviceUniqueID());
+            }
+        }
+
         public void Mute(int deviceNum)
         {
             if (_devices[deviceNum - 1] != null)

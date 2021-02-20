@@ -48,6 +48,42 @@ namespace ArduinoVolumeLib
             }
         }
 
+        public string GetDeviceDisplayName()
+        {
+            if (this.IsMasterVolumeControlForDevice)
+            {
+                return _device.FriendlyName;
+            }
+            else
+            {
+                return _session.DisplayName;
+            }
+        }
+
+        public bool GetDeviceMuted()
+        {
+            if (this.IsMasterVolumeControlForDevice)
+            {
+                return _device.AudioEndpointVolume.Mute;
+            }
+            else
+            {
+                return _session.SimpleAudioVolume.Mute;
+            }
+        }
+
+        public float GetDeviceCurVol()
+        {
+            if (this.IsMasterVolumeControlForDevice)
+            {
+                return _device.AudioEndpointVolume.MasterVolumeLevelScalar;
+            }
+            else
+            {
+                return _session.SimpleAudioVolume.Volume;
+            }
+        }
+
         public void VolumeUp(float volAdjustAmountInc)
         {
             if(IsMasterVolumeControlForDevice)

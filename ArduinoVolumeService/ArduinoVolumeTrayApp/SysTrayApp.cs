@@ -33,24 +33,26 @@ namespace ArduinoVolumeTrayApp
 			// Setup tray icon to have a menu
 			_contextMenus = new ContextMenus();
 			_contextMenus.ExitClicked += _contextMenus_ExitClicked;
-			_ni.ContextMenuStrip = _contextMenus.Create();           
+			_ni.ContextMenuStrip = _contextMenus.Create();
+
+            _deviceController = new DeviceController();
+            _deviceController.DeviceVolChangedEvent += _deviceController_DeviceVolChangedEvent;
 
             // Setup serial connector
             _serialCon = new SerialConnector();
             _serialCon.StateChangeEvent += _serialCon_StateChangeEvent;
             _serialCon.CommandReceivedEvent += _serialCon_CommandReceivedEvent;
-			_serialCon.Connect();
 
-            _deviceController = new DeviceController();
-            _deviceController.DeviceVolChangedEvent += _deviceController_DeviceVolChangedEvent;
 
             _connKeepAliveThread = new Thread(KeepConnAlive);
-            _connKeepAliveThread.Start();
 
             _webAccessHost = new WebConnector(_webHostUrl);
             _webAccessHost.WebStateChangeEvent += _webAccessHost_WebStateChangeEvent;
             _webAccessHost.WebCommandEvent += _webAccessHost_WebCommandEvent;
+
             _webAccessHost.StartWeb();
+            _connKeepAliveThread.Start();
+            _serialCon.Connect();
         }
 
         private void _webAccessHost_WebCommandEvent(object sender, CommandFromWebEventArgs e)
@@ -125,6 +127,10 @@ namespace ArduinoVolumeTrayApp
         private void _serialCon_StateChangeEvent(object sender, SerialStateChangeEventArgs e)
         {
              _contextMenus.UpdateSerialStatus(e);
+            if(e.State == SerialStateEnum.Connected)
+            {
+                _deviceController.GetDeviceStatus(1);
+            }
         }
 
         private void _contextMenus_ExitClicked(object sender, EventArgs e)
