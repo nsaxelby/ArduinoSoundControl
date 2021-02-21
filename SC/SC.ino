@@ -206,6 +206,7 @@ void processCommand(String command)
   }
   else if(command.startsWith("ECHO:"))
   {
+    Serial.flush();
     Serial.print(command + ';');
   }
 }
