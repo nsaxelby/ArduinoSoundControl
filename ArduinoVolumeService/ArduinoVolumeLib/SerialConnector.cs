@@ -28,6 +28,7 @@ namespace ArduinoVolumeLib
         {
             if(ConnectToAvailableSocket() == true)
             {
+                Console.WriteLine("Connected running read thread");
                 _readThread = new Thread(Read);
                 _readThread.Start();
                 return true;
@@ -148,14 +149,15 @@ namespace ArduinoVolumeLib
                 }
                 else
                 {
-                    _serialPort.DiscardOutBuffer();
+                    // Clear the output buffer that the arduino might have ( should a user use the enocders before connecting )
+                    _serialPort.ReadExisting();
+
                     _serialPort.WriteLine("ECHO:Hello");
-                    if(_serialPort.ReadLine() == "ECHO:Hello")
+                    var response = _serialPort.ReadLine();
+
+                    Console.WriteLine("Response: " + response);
+                    if (response == "ECHO:Hello")
                     {
-                        //if (_serialPort.IsOpen)
-                        //{
-                        //    _serialPort.Write("ROW1:" + Util.NormalizeNameForRow("Connected"));
-                        //}
                         return true;
                     }
                     else
