@@ -51,8 +51,8 @@ namespace ArduinoVolumeTrayApp
             _webAccessHost.WebCommandEvent += _webAccessHost_WebCommandEvent;
 
             _webAccessHost.StartWeb();
-            _connKeepAliveThread.Start();
             _serialCon.Connect();
+            _connKeepAliveThread.Start();
         }
 
         private void _webAccessHost_WebCommandEvent(object sender, CommandFromWebEventArgs e)
