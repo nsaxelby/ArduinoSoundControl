@@ -33,7 +33,7 @@ body {
 
 .encoderPanel .slider-wrap
 {
-    width: 150px;
+    width: 200px;
 }
 
 .barAlign
@@ -45,4 +45,19 @@ body {
 {
     padding-top: 10px;
     text-align: center;
+}
+
+.titleBar
+{
+    padding-top: 5px;
+    text-align: center;
+    padding-bottom: 10px;
+    max-width: 200px;
+}
+
+.encoderTitles
+{
+    min-height: 48px;
+    max-height: 48px;
+    overflow: auto;
 }

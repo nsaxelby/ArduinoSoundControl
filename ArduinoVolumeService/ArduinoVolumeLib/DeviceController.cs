@@ -1,6 +1,7 @@
 ﻿using NAudio.CoreAudioApi;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ArduinoVolumeLib
 {
@@ -13,7 +14,7 @@ namespace ArduinoVolumeLib
         MMDeviceEnumerator deviceEnumerator;
 
         public event EventHandler<DeviceVolChangedEventArgs> DeviceVolChangedEvent;
-        public event EventHandler<DeviceListChangedEventArgs> DeviceListChangedEvent;
+        public event EventHandler<DeviceListResponseEventArgs> DeviceListResponseEvent;
 
         public DeviceController()
         {
@@ -177,12 +178,25 @@ namespace ArduinoVolumeLib
                 for(int i = 0; i < dev.AudioSessionManager.Sessions.Count; i++)
                 {
                     var sess = dev.AudioSessionManager.Sessions[i];
-                    SoundSessionItem sessItem = new SoundSessionItem(sess.DisplayName, sess.GetSessionIdentifier, GetDeviceEncoderNumberByID(sess.GetSessionIdentifier));
+                    SoundSessionItem sessItem = new SoundSessionItem(GetSessionNameTitle(sess.GetProcessID), sess.GetSessionIdentifier, GetDeviceEncoderNumberByID(sess.GetSessionIdentifier));
                     di.SoundSessions.Add(sessItem);
                 }
                 devices.Add(di);
             }
-            RaiseDeviceListChangedEvent(new DeviceListChangedEventArgs(devices));
+            RaiseDeviceListChangedEvent(new DeviceListResponseEventArgs(devices));
+        }
+
+        string GetSessionNameTitle(uint processId)
+        {
+            try
+            {
+                var process = Process.GetProcessById((int)processId);
+                return process.ProcessName;
+            }
+            catch (ArgumentException)
+            {
+                return "Unknown";
+            }
         }
 
         public int? GetDeviceEncoderNumberByID(string deviceID)
@@ -200,9 +214,9 @@ namespace ArduinoVolumeLib
             return null;
         }
 
-        protected virtual void RaiseDeviceListChangedEvent(DeviceListChangedEventArgs e)
+        protected virtual void RaiseDeviceListChangedEvent(DeviceListResponseEventArgs e)
         {
-            EventHandler<DeviceListChangedEventArgs> raiseEvent = DeviceListChangedEvent;
+            EventHandler<DeviceListResponseEventArgs> raiseEvent = DeviceListResponseEvent;
 
             if(raiseEvent != null)
             {

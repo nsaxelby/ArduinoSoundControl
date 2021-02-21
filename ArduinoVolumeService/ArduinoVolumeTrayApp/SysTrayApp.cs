@@ -37,22 +37,34 @@ namespace ArduinoVolumeTrayApp
 
             _deviceController = new DeviceController();
             _deviceController.DeviceVolChangedEvent += _deviceController_DeviceVolChangedEvent;
+            _deviceController.DeviceListResponseEvent += _deviceController_DeviceListChangedEvent;
 
             // Setup serial connector
             _serialCon = new SerialConnector();
             _serialCon.StateChangeEvent += _serialCon_StateChangeEvent;
             _serialCon.CommandReceivedEvent += _serialCon_CommandReceivedEvent;
 
-
             _connKeepAliveThread = new Thread(KeepConnAlive);
 
             _webAccessHost = new WebConnector(_webHostUrl);
             _webAccessHost.WebStateChangeEvent += _webAccessHost_WebStateChangeEvent;
             _webAccessHost.WebCommandEvent += _webAccessHost_WebCommandEvent;
+            _webAccessHost.WebRequestBoundDevicesChangeEvent += _webAccessHost_WebRequestBoundDevicesChangeEvent;
 
             _webAccessHost.StartWeb();
             _serialCon.Connect();
             _connKeepAliveThread.Start();
+        }
+
+        private void _deviceController_DeviceListChangedEvent(object sender, DeviceListResponseEventArgs e)
+        {
+            _webAccessHost.UpdateDevicesAndBindings(e);
+        }
+
+        private void _webAccessHost_WebRequestBoundDevicesChangeEvent(object sender, RequestBoundDevicesEventArgs e)
+        {
+            // Web has asked for a list of bound devices, so we forward this request on to device manager
+            _deviceController.RequestDevices();
         }
 
         private void _webAccessHost_WebCommandEvent(object sender, CommandFromWebEventArgs e)

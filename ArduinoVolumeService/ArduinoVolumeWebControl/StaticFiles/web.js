@@ -31,10 +31,26 @@
 			$(muteButonName).prop('value', 'Mute');
 		}
 		enocdesArr[encnumber - 1].slider('setValue', volume);
-    };
+	};
+
+	hub.client.updateDevices = function (json) {
+		for (var i = 0; i < json.DeviceItems.length; i++) {
+			var entry = json.DeviceItems[i];
+			if (entry.EncoderNumber !== null) {
+				$('#encoderTitle'.concat(entry.EncoderNumber)).html(entry.Name);
+			}
+			for (var x = 0; x < entry.SoundSessions.length; x++) {
+				var ssentry = entry.SoundSessions[x];
+				if (ssentry.EncoderNumber !== null) {
+					$('#encoderTitle'.concat(ssentry.EncoderNumber)).html(ssentry.Name);
+				}
+			}
+		}
+    }
 
     // Start the connection.
 	$.connection.hub.start().done(function () {
+		hub.server.requestBoundDevices();
 		console.log("Connected hub");
 	});
 

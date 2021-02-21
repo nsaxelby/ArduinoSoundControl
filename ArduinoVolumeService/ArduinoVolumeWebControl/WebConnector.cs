@@ -18,6 +18,11 @@ namespace ArduinoVolumeWebControl
         event EventHandler<DeviceVolChangedEventArgs> DeviceVolChangedEvent;
         event EventHandler<CommandFromWebEventArgs> WebCommandEvent;
         event EventHandler<WebConnectorStateChangeEventArgs> WebStateChangeEvent;
+        event EventHandler<RequestBoundDevicesEventArgs> WebRequestBoundDevicesChangeEvent;
+
+        void RequestBoundDevices();
+
+        void UpdateDevicesAndBindings(DeviceListResponseEventArgs e);
     }
 
     public class WebConnector : IWebConnector
@@ -29,6 +34,7 @@ namespace ArduinoVolumeWebControl
         public event EventHandler<DeviceVolChangedEventArgs> DeviceVolChangedEvent;
         public event EventHandler<CommandFromWebEventArgs> WebCommandEvent;
         public event EventHandler<WebConnectorStateChangeEventArgs> WebStateChangeEvent;
+        public event EventHandler<RequestBoundDevicesEventArgs> WebRequestBoundDevicesChangeEvent;
 
         public int msDelayDontUpdateWeb = 2000;
         public DateTime dateLastUpdateFromWeb = new DateTime();
@@ -105,24 +111,7 @@ namespace ArduinoVolumeWebControl
             }
         }
 
-        protected virtual void RaiseDeviceVolChangedEvent(DeviceVolChangedEventArgs e)
-        {
-            // Make a temporary copy of the event to avoid possibility of
-            // a race condition if the last subscriber unsubscribes
-            // immediately after the null check and before the event is raised.
-            EventHandler<DeviceVolChangedEventArgs> raiseEvent = DeviceVolChangedEvent;
-
-            // Event will be null if there are no subscribers
-            if (raiseEvent != null)
-            {
-                raiseEvent(this, e);
-            }
-            //if (dateLastUpdateFromWeb.AddMilliseconds(msDelayDontUpdateWeb) <= DateTime.Now)
-            //{
-                GlobalHost.ConnectionManager.GetHubContext<WebControlHub>().Clients.All.updateVol(e.EncoderNumber, e.Muted, e.Volume * 100);
-            //}
-        }
-        protected virtual void DeviceListChangedEvent(DeviceListChangedEventArgs e)
+        protected virtual void DeviceListChangedEvent(DeviceListResponseEventArgs e)
         {
             GlobalHost.ConnectionManager.GetHubContext<WebControlHub>().Clients.All.updateVol(e);
         }
@@ -172,9 +161,49 @@ namespace ArduinoVolumeWebControl
             }
         }
 
+        protected virtual void RaiseDeviceVolChangedEvent(DeviceVolChangedEventArgs e)
+        {
+            // Make a temporary copy of the event to avoid possibility of
+            // a race condition if the last subscriber unsubscribes
+            // immediately after the null check and before the event is raised.
+            EventHandler<DeviceVolChangedEventArgs> raiseEvent = DeviceVolChangedEvent;
+
+            // Event will be null if there are no subscribers
+            if (raiseEvent != null)
+            {
+                raiseEvent(this, e);
+            }
+
+            GlobalHost.ConnectionManager.GetHubContext<WebControlHub>().Clients.All.updateVol(e.EncoderNumber, e.Muted, e.Volume * 100);
+        }
+
         public void StopWeb()
         {
             _continue = false;
+        }
+
+        public void RequestBoundDevices()
+        {
+            RequestBoundDevicesEvent();
+        }
+
+        private void RequestBoundDevicesEvent()
+        {
+            // Make a temporary copy of the event to avoid possibility of
+            // a race condition if the last subscriber unsubscribes
+            // immediately after the null check and before the event is raised.
+            EventHandler<RequestBoundDevicesEventArgs> raiseEvent = WebRequestBoundDevicesChangeEvent;
+
+            // Event will be null if there are no subscribers
+            if (raiseEvent != null)
+            {
+                raiseEvent(this, new RequestBoundDevicesEventArgs());
+            }
+        }
+
+        public void UpdateDevicesAndBindings(DeviceListResponseEventArgs e)
+        {
+            GlobalHost.ConnectionManager.GetHubContext<WebControlHub>().Clients.All.updateDevices(e);
         }
     }
 
@@ -195,7 +224,7 @@ namespace ArduinoVolumeWebControl
 
         public void RequestBoundDevices()
         {
-
+            _webConnector.RequestBoundDevices();
         }
 
         public void MuteEncoder(int encoder, bool mute)

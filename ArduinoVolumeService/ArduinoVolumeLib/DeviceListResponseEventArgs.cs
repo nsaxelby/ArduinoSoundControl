@@ -5,10 +5,10 @@ using System.Text;
 
 namespace ArduinoVolumeLib
 {
-    public class DeviceListChangedEventArgs : EventArgs
+    public class DeviceListResponseEventArgs : EventArgs
     {
         public List<DeviceItem> DeviceItems { get; set; }
-        public DeviceListChangedEventArgs(List<DeviceItem> devs)
+        public DeviceListResponseEventArgs(List<DeviceItem> devs)
         {
             DeviceItems = devs;
         }
