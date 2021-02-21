@@ -62,6 +62,12 @@
     </Compile>
     <Compile Include="ContextMenus.cs" />
     <Compile Include="IContextMenuEventListener.cs" />
+    <Compile Include="LogListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LogListForm.Designer.cs">
+      <DependentUpon>LogListForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SysTrayApp.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -83,6 +89,9 @@
   <ItemGroup>
     <EmbeddedResource Include="AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LogListForm.resx">
+      <DependentUpon>LogListForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

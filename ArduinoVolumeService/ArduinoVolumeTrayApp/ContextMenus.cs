@@ -11,6 +11,7 @@ namespace ArduinoVolumeTrayApp
 		ToolStripMenuItem _webBrowseButton;
 		ToolStripLabel _webStatusLabel;
 		public event EventHandler ExitClicked;
+		public event EventHandler ShowLogsClicked;
 		ContextMenuStrip _menu = new ContextMenuStrip();
 		string _webHostUrl = "http://localhost";
 
@@ -48,6 +49,14 @@ namespace ArduinoVolumeTrayApp
 			_menu.Items.Add(sep);
 
 			item = new ToolStripMenuItem();
+			item.Text = "Logs";
+			item.Click += new EventHandler(ShowLogs_Click);
+			_menu.Items.Add(item);
+
+			sep = new ToolStripSeparator();
+			_menu.Items.Add(sep);
+
+			item = new ToolStripMenuItem();
 			item.Text = "Exit";
 			item.Click += new EventHandler(Exit_Click);
 			_menu.Items.Add(item);
@@ -80,6 +89,14 @@ namespace ArduinoVolumeTrayApp
             {
 				Application.Exit();
             }
+		}
+
+		void ShowLogs_Click(object sender, EventArgs e)
+        {
+			if (ShowLogsClicked != null)
+			{
+				ShowLogsClicked.Invoke(this, e);
+			}
 		}
 
 		public void UpdateSerialStatus(SerialStateChangeEventArgs stateChangeEventArgs)

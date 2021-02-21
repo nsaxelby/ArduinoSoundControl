@@ -47,6 +47,7 @@
     <Compile Include="CommandFromArduinoEventArgs.cs" />
     <Compile Include="CommandFromWebEventArgs.cs" />
     <Compile Include="DeviceListResponseEventArgs.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="RequestBoundDevicesEventArgs.cs" />
     <Compile Include="VolChangeCommandFromWebEventArgs.cs" />
     <Compile Include="SerialCommandsEnum.cs" />

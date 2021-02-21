@@ -14,13 +14,13 @@ namespace ArduinoVolumeTrayApp
 		ContextMenus _contextMenus;
         DeviceController _deviceController;
         WebConnector _webAccessHost;
+        Logger _logger;
 
-        private static string _webHostUrl = "http://+:5151/";
+        static string _webHostUrl = "http://+:5151/";
 
         Thread _connKeepAliveThread;
         bool _continue = true;
         bool _keepConnected = true;
-
 
         public SysTrayApp()
 		{
@@ -30,11 +30,16 @@ namespace ArduinoVolumeTrayApp
 			_ni.Text = "Arduino Volume Service";
 			_ni.Visible = true;
 
+            // Logger to reccord info/debug stuff
+            _logger = new Logger(100);
+
 			// Setup tray icon to have a menu
 			_contextMenus = new ContextMenus();
 			_contextMenus.ExitClicked += _contextMenus_ExitClicked;
+            _contextMenus.ShowLogsClicked += _contextMenus_ShowLogsClicked;
 			_ni.ContextMenuStrip = _contextMenus.Create();
 
+            // Device control connects to windows OS
             _deviceController = new DeviceController();
             _deviceController.DeviceVolChangedEvent += _deviceController_DeviceVolChangedEvent;
             _deviceController.DeviceListResponseEvent += _deviceController_DeviceListChangedEvent;
@@ -54,6 +59,11 @@ namespace ArduinoVolumeTrayApp
             _webAccessHost.StartWeb();
             _serialCon.Connect();
             _connKeepAliveThread.Start();
+        }
+
+        private void _contextMenus_ShowLogsClicked(object sender, EventArgs e)
+        {
+            new LogListForm(_logger.ReadLogResults()).ShowDialog();
         }
 
         private void _deviceController_DeviceListChangedEvent(object sender, DeviceListResponseEventArgs e)
