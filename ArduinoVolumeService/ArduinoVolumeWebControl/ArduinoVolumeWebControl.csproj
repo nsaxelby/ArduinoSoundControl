@@ -153,15 +153,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="StaticFiles\jquery-1.6.4-vsdoc.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="StaticFiles\jquery-1.6.4.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="StaticFiles\jquery-1.6.4.min.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="StaticFiles\jquery.signalR-2.4.1.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -174,7 +165,7 @@
     <Content Include="StaticFiles\bootstrap-slider.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="StaticFiles\bootstrap.bundle.min.js">
+    <Content Include="StaticFiles\bootstrap.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="StaticFiles\bootstrap.css">

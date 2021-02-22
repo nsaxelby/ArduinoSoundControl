@@ -34,16 +34,20 @@
 	};
 
 	hub.client.updateDevices = function (json) {
+		$(".deviceMenuList").empty();
 		for (var i = 0; i < json.DeviceItems.length; i++) {
 			var entry = json.DeviceItems[i];
 			if (entry.EncoderNumber !== null) {
-				$('#encoderTitle'.concat(entry.EncoderNumber)).html(entry.Name);
+				$('#encoderSelectButton'.concat(entry.EncoderNumber)).html(entry.Name.concat(' <span class="caret"></span>'));
 			}
+
+			$(".deviceMenuList").append("<li>" + entry.Name + "</li>");
 			for (var x = 0; x < entry.SoundSessions.length; x++) {
 				var ssentry = entry.SoundSessions[x];
 				if (ssentry.EncoderNumber !== null) {
-					$('#encoderTitle'.concat(ssentry.EncoderNumber)).html(ssentry.Name);
+					$('#encoderSelectButton'.concat(ssentry.EncoderNumber)).html(ssentry.Name.concat(' <span class="caret"></span>'));
 				}
+				$(".deviceMenuList").append("<li>" + entry.Name + " - " + ssentry.Name + "</li>");
 			}
 		}
     }

@@ -31,13 +31,13 @@ body {
     background: lightgray !important;
 }
 
-.encoderPanel .slider-wrap
-{
+.encoderPanel .slider-wrap {
     width: 200px;
 }
 
 .barAlign
 {
+    padding-top: 10px;
     text-align: center;
 }
 
@@ -55,9 +55,20 @@ body {
     max-width: 200px;
 }
 
-.encoderTitles
+.selectionPanel {
+}
+
+.encoderSelectButton {
+    height: 55px;
+    width: 195px;
+    white-space: normal !important;
+}
+
+.deviceMenuList
 {
-    min-height: 48px;
-    max-height: 48px;
-    overflow: auto;
+    width: 200px;
+}
+
+.deviceMenuList li {
+    padding: 10px;
 }

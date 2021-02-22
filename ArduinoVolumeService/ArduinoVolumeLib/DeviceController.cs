@@ -178,8 +178,11 @@ namespace ArduinoVolumeLib
                 for(int i = 0; i < dev.AudioSessionManager.Sessions.Count; i++)
                 {
                     var sess = dev.AudioSessionManager.Sessions[i];
-                    SoundSessionItem sessItem = new SoundSessionItem(GetSessionNameTitle(sess.GetProcessID), sess.GetSessionIdentifier, GetDeviceEncoderNumberByID(sess.GetSessionIdentifier));
-                    di.SoundSessions.Add(sessItem);
+                    if(sess.IsSystemSoundsSession == false)
+                    {
+                        SoundSessionItem sessItem = new SoundSessionItem(GetSessionNameTitle(sess.GetProcessID), sess.GetSessionIdentifier, GetDeviceEncoderNumberByID(sess.GetSessionIdentifier));
+                        di.SoundSessions.Add(sessItem);
+                    }
                 }
                 devices.Add(di);
             }
