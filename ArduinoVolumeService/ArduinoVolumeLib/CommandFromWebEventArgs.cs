@@ -8,9 +8,9 @@
         public int Volume { get; set; }
         public bool IsDeviceBinding { get; set; }
         public string DeviceBindingID { get; set; }
-        public string SessionBindingID { get; set; }
+        public uint SessionProcessID { get; set; }
 
-        public CommandFromWebEventArgs(int encoderNumber, WebCommandEnum webCommand, bool muted, int volume, bool isDeviceBinding, string deviceBindingID, string sessionBindingID)
+        public CommandFromWebEventArgs(int encoderNumber, WebCommandEnum webCommand, bool muted, int volume, bool isDeviceBinding, string deviceBindingID, uint sessionProcessID)
         {
             this.EncoderNumber = encoderNumber;
             this.WebCommand = webCommand;
@@ -18,7 +18,7 @@
             this.Volume = volume;
             this.IsDeviceBinding = isDeviceBinding;
             this.DeviceBindingID = deviceBindingID;
-            this.SessionBindingID = sessionBindingID;
+            this.SessionProcessID = sessionProcessID;
         }
     }
 }

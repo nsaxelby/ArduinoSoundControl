@@ -46,7 +46,7 @@ namespace ArduinoVolumeLib
             }
             else
             {
-                return _session.GetSessionIdentifier;
+                return _session.GetProcessID.ToString();
             }
         }
 
@@ -234,6 +234,14 @@ namespace ArduinoVolumeLib
         public void OnSessionDisconnected(AudioSessionDisconnectReason disconnectReason)
         {
             // DO nothing, intentional
+        }
+        public void Dispose()
+        {
+            _device.Dispose();
+            if(_session != null)
+            {
+                _session.UnRegisterEventClient(this);
+            }
         }
     }
 }

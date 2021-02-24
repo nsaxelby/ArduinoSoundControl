@@ -69,6 +69,11 @@ body {
     width: 200px;
 }
 
-.deviceMenuList li {
+.deviceMenuList li{
     padding: 10px;
+}
+
+.deviceMenuList li a {
+    padding: 0px 5px !important;
+    white-space:normal;
 }

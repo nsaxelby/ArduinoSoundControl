@@ -14,7 +14,7 @@ namespace ArduinoVolumeWebControl
     {
         void VolumeChangeFromWeb(int encoder, int volume);
         void EncoderMutedChangeFromWeb(int encoder, bool muted);
-        void RebindController(int encoder, bool deviceBinding, string deviceID, string sessionID);
+        void RebindController(int encoder, bool deviceBinding, string deviceID, uint sessionProcessID);
         event EventHandler<DeviceVolChangedEventArgs> DeviceVolChangedEvent;
         event EventHandler<CommandFromWebEventArgs> WebCommandEvent;
         event EventHandler<WebConnectorStateChangeEventArgs> WebStateChangeEvent;
@@ -119,17 +119,17 @@ namespace ArduinoVolumeWebControl
         public void VolumeChangeFromWeb(int encoder, int volume)
         {
             dateLastUpdateFromWeb = DateTime.Now;
-            RaiseWebCommandEvent(new CommandFromWebEventArgs(encoder, WebCommandEnum.VOLCHANGE, false, volume, false, "", ""));
+            RaiseWebCommandEvent(new CommandFromWebEventArgs(encoder, WebCommandEnum.VOLCHANGE, false, volume, false, "", 0));
         }
 
         public void EncoderMutedChangeFromWeb(int encoder, bool muted)
         {
-            RaiseWebCommandEvent(new CommandFromWebEventArgs(encoder, muted ? WebCommandEnum.MUTED : WebCommandEnum.UNMUTED, muted, 0, false, "", ""));
+            RaiseWebCommandEvent(new CommandFromWebEventArgs(encoder, muted ? WebCommandEnum.MUTED : WebCommandEnum.UNMUTED, muted, 0, false, "", 0));
         }
 
-        public void RebindController(int encoder, bool deviceBinding, string deviceID, string sessionID)
+        public void RebindController(int encoder, bool deviceBinding, string deviceID, uint sessionProcessID)
         {
-            RaiseWebCommandEvent(new CommandFromWebEventArgs(encoder, WebCommandEnum.REBINDENCODER, false, 0, deviceBinding, deviceID, sessionID));
+            RaiseWebCommandEvent(new CommandFromWebEventArgs(encoder, WebCommandEnum.REBINDENCODER, false, 0, deviceBinding, deviceID, sessionProcessID));
         }
 
         protected virtual void RaiseWebCommandEvent(CommandFromWebEventArgs e)
@@ -148,14 +148,14 @@ namespace ArduinoVolumeWebControl
 
         public void SendVolChangedEncoderNumber(DeviceVolChangedEventArgs e)
         {
-            if(e.EncoderNumber >= 1)
+            if(e.EncoderNumbers.Count >= 1)
             {
                 RaiseDeviceVolChangedEvent(e);
             }
         }
         public void SendMutedChangeEnocderNumber(DeviceVolChangedEventArgs e)
         {
-            if(e.EncoderNumber >= 1)
+            if(e.EncoderNumbers.Count >= 1)
             {
                 RaiseDeviceVolChangedEvent(e);
             }
@@ -174,7 +174,7 @@ namespace ArduinoVolumeWebControl
                 raiseEvent(this, e);
             }
 
-            GlobalHost.ConnectionManager.GetHubContext<WebControlHub>().Clients.All.updateVol(e.EncoderNumber, e.Muted, e.Volume * 100);
+            GlobalHost.ConnectionManager.GetHubContext<WebControlHub>().Clients.All.updateVol(e.EncoderNumbers, e.Muted, e.Volume * 100);
         }
 
         public void StopWeb()
@@ -234,12 +234,12 @@ namespace ArduinoVolumeWebControl
 
         public void RebindEncoderToDevice(int encoder, string deviceID)
         {
-            _webConnector.RebindController(encoder, true, deviceID, "");
+            _webConnector.RebindController(encoder, true, deviceID, 0);
         }
 
-        public void RebindEncoderToSession(int encoder, string deviceID, string sessionID)
+        public void RebindEncoderToSession(int encoder, string deviceID, int sessionProcessID)
         {
-            _webConnector.RebindController(encoder, false, deviceID, sessionID);
+            _webConnector.RebindController(encoder, false, deviceID, Convert.ToUInt32(sessionProcessID));
         }
     }
 }

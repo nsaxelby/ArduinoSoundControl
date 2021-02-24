@@ -18,14 +18,14 @@ namespace ArduinoVolumeLib
     {
         public String Name { get; set; }
         public string DeviceID { get; set; }
-        public int? EncoderNumber { get; set; }
+        public List<int> EncoderNumbers { get; set; }
         public List<SoundSessionItem> SoundSessions { get; set; }
 
-        public DeviceItem(string devName, string devID, int? encNumber)
+        public DeviceItem(string devName, string devID, List<int> encoderNumbers)
         {
             this.Name = devName;
             this.DeviceID = devID;
-            this.EncoderNumber = encNumber;
+            this.EncoderNumbers = encoderNumbers;
             SoundSessions = new List<SoundSessionItem>();
         }
     }
@@ -33,14 +33,14 @@ namespace ArduinoVolumeLib
     public class SoundSessionItem
     {
         public string Name { get; set; }
-        public string SoundSessionID { get; set; }
-        public int? EncoderNumber { get; set; }
+        public uint SoundSessionProcessID { get; set; }
+        public List<int> EncoderNumbers { get; set; }
 
-        public SoundSessionItem(string sessionName, string sessionID, int? encoderNumber)
+        public SoundSessionItem(string sessionName, uint SoundSessionProcessID, List<int> encoderNumbers)
         {
             this.Name = sessionName;
-            this.SoundSessionID = sessionID;
-            this.EncoderNumber = encoderNumber;
+            this.SoundSessionProcessID = SoundSessionProcessID;
+            this.EncoderNumbers = encoderNumbers;
         }
     }
 

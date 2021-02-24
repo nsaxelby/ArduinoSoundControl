@@ -100,12 +100,13 @@ namespace ArduinoVolumeLib
 
         internal void VolChangedDevice(string deviceFriendlyName, float masterVolume, bool muted, string identifier)
         {
-            int encoderNumber = GetEncoderNumFromID(identifier);
-            RaiseDeviceVolChangedEvent(new DeviceVolChangedEventArgs(deviceFriendlyName, masterVolume, muted, encoderNumber));
+            List<int> encoderNumbers = GetEncoderNumbersFromDeviceFromID(identifier);
+            RaiseDeviceVolChangedEvent(new DeviceVolChangedEventArgs(deviceFriendlyName, masterVolume, muted, encoderNumbers));
         }
 
-        private int GetEncoderNumFromID(string identifier)
+        private List<int> GetEncoderNumbersFromDeviceFromID(string identifier)
         {
+            List<int> encodersUsingDev = new List<int>();
             int num = 1;
             foreach(var device in _devices)
             {
@@ -113,15 +114,12 @@ namespace ArduinoVolumeLib
                 {
                     if (device.GetDeviceUniqueID() == identifier)
                     {
-                        return num;
+                        encodersUsingDev.Add(num);
                     }
-                    else
-                    {
-                        num++;
-                    }
+                    num++;
                 }
             }
-            return -1;
+            return encodersUsingDev;
         }
 
         public void VolumeDown(int deviceNum)
@@ -180,7 +178,7 @@ namespace ArduinoVolumeLib
                     var sess = dev.AudioSessionManager.Sessions[i];
                     if(sess.IsSystemSoundsSession == false)
                     {
-                        SoundSessionItem sessItem = new SoundSessionItem(GetSessionNameTitle(sess.GetProcessID), sess.GetSessionIdentifier, GetDeviceEncoderNumberByID(sess.GetSessionIdentifier));
+                        SoundSessionItem sessItem = new SoundSessionItem(GetSessionNameTitle(sess.GetProcessID), sess.GetProcessID, GetDeviceEncoderNumberByID(sess.GetProcessID.ToString()));
                         di.SoundSessions.Add(sessItem);
                     }
                 }
@@ -202,19 +200,76 @@ namespace ArduinoVolumeLib
             }
         }
 
-        public int? GetDeviceEncoderNumberByID(string deviceID)
+        public void BindEncoderToDevice(int deviceNum, string deviceID)
         {
+            var soundDev = GetSoundDeviceByID(deviceID);
+            if(soundDev != null)
+            {
+                _devices[deviceNum - 1].Dispose();
+                _devices[deviceNum - 1] = soundDev;
+            }
+            RequestDevices();
+        }
+
+        public void BindEncoderToSession(int deviceNum, string deviceID, uint processID)
+        {
+            var soundDev = GetSoundDeviceBySessionDeviceID(deviceID, processID);
+            if(soundDev != null)
+            {
+                _devices[deviceNum - 1].Dispose();
+                _devices[deviceNum - 1] = soundDev;
+            }
+            RequestDevices();
+        }
+
+        public SoundDevice GetSoundDeviceByID(string deviceID)
+        {
+            var allDevices = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+            foreach (var dev in allDevices)
+            {
+                if(dev.ID == deviceID)
+                {
+                    return new SoundDevice(this, true, dev);
+                }
+            }
+            return null;
+        }
+
+        public SoundDevice GetSoundDeviceBySessionDeviceID(string deviceID, uint sessionProcessID)
+        {
+            var allDevices = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+            foreach (var dev in allDevices)
+            {
+                if (deviceID == dev.ID)
+                {
+                    for (int i = 0; i < dev.AudioSessionManager.Sessions.Count; i++)
+                    {
+                        var sess = dev.AudioSessionManager.Sessions[i];
+                        if(sess.GetProcessID == sessionProcessID)
+                        {
+                            return new SoundDevice(this, false, dev, sess);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+
+        public List<int> GetDeviceEncoderNumberByID(string deviceID)
+        {
+            List<int> deviceEnocders = new List<int>();
             for(int i = 0; i <_devices.Length; i++)
             {
                 if(_devices[i] != null)
                 {
                     if(_devices[i].GetDeviceUniqueID() == deviceID)
                     {
-                        return i + 1;
+                        deviceEnocders.Add(i + 1);
                     }
                 }
             }
-            return null;
+            return deviceEnocders;
         }
 
         protected virtual void RaiseDeviceListChangedEvent(DeviceListResponseEventArgs e)

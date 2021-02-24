@@ -97,6 +97,16 @@ namespace ArduinoVolumeTrayApp
                     }
                     break;
                 case WebCommandEnum.REBINDENCODER:
+                    {
+                        if(e.SessionProcessID <= 0)
+                        {
+                            _deviceController.BindEncoderToDevice(e.EncoderNumber, e.DeviceBindingID);
+                        }
+                        else
+                        {
+                            _deviceController.BindEncoderToSession(e.EncoderNumber, e.DeviceBindingID, e.SessionProcessID);
+                        }
+                    }
                     break;
                 default:
                     break;
