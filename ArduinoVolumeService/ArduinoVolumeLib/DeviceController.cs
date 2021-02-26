@@ -216,7 +216,10 @@ namespace ArduinoVolumeLib
             var soundDev = GetSoundDeviceBySessionDeviceID(deviceID, processID);
             if(soundDev != null)
             {
-                _devices[deviceNum - 1].Dispose();
+                if (_devices[deviceNum - 1] != null)
+                {
+                    _devices[deviceNum - 1].Dispose();
+                }
                 _devices[deviceNum - 1] = soundDev;
             }
             RequestDevices();

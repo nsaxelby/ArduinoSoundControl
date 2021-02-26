@@ -198,7 +198,7 @@ namespace ArduinoVolumeLib
             try
             {
                 var process = Process.GetProcessById((int)processId);
-                return process.ProcessName;
+                return process.MainWindowTitle != "" ? process.MainWindowTitle : process.ProcessName;
             }
             catch (ArgumentException)
             {
