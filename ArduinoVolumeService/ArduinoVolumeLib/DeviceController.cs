@@ -11,7 +11,7 @@ namespace ArduinoVolumeLib
         SoundDevice[] _devices = new SoundDevice[3];
         float _volAdjustAmountInc = 0.05F;
         float _volAdjustAmountDec = 0.05F;
-        MMDeviceEnumerator deviceEnumerator;
+        //MMDeviceEnumerator deviceEnumerator;
 
         public event EventHandler<DeviceVolChangedEventArgs> DeviceVolChangedEvent;
         public event EventHandler<DeviceListResponseEventArgs> DeviceListResponseEvent;
@@ -19,33 +19,33 @@ namespace ArduinoVolumeLib
         public DeviceController()
         {
             // Setup audio devices
-            deviceEnumerator = new MMDeviceEnumerator();
+            //deviceEnumerator = new MMDeviceEnumerator();
 
-            // Always initiate Encoder 1 to Master Volume of the default audio device
-            if (deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia) != null)
-            {
-                _devices[0] = new SoundDevice(this, true, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia));
-            }
-            // Try initiate always to Microphone if we find one
-            if (deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia) != null)
-            {
-                _devices[1] = new SoundDevice(this, true, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia));
-            }
-            // Find Chrome as default..
-            var sessionChrome = FindChrome(deviceEnumerator);
-            if (sessionChrome != null)
-            {
-                _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia), sessionChrome);
-            }
-            else
-            {
-                var sessionSpotify = FindSpotify(deviceEnumerator);
-                if (sessionSpotify != null)
-                {
-                    _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia), sessionSpotify);
+            //// Always initiate Encoder 1 to Master Volume of the default audio device
+            //if (deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia) != null)
+            //{
+            //    _devices[0] = new SoundDevice(this, true, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia));
+            //}
+            //// Try initiate always to Microphone if we find one
+            //if (deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia) != null)
+            //{
+            //    _devices[1] = new SoundDevice(this, true, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia));
+            //}
+            //// Find Chrome as default..
+            //var sessionChrome = FindChrome(deviceEnumerator);
+            //if (sessionChrome != null)
+            //{
+            //    _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia), sessionChrome);
+            //}
+            //else
+            //{
+            //    var sessionSpotify = FindSpotify(deviceEnumerator);
+            //    if (sessionSpotify != null)
+            //    {
+            //        _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia), sessionSpotify);
 
-                }
-            }
+            //    }
+            //}
         }
 
         private AudioSessionControl FindSpotify(MMDeviceEnumerator deviceEnumerator)
@@ -169,7 +169,7 @@ namespace ArduinoVolumeLib
         public void RequestDevices()
         {
             List<DeviceItem> devices = new List<DeviceItem>();
-            var allDevices = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+            var allDevices = new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
             foreach(var dev in allDevices)
             {
                 DeviceItem di = new DeviceItem(dev.DeviceFriendlyName, dev.ID, GetDeviceEncoderNumberByID(dev.ID));
@@ -230,7 +230,7 @@ namespace ArduinoVolumeLib
 
         public SoundDevice GetSoundDeviceByID(string deviceID)
         {
-            var allDevices = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+            var allDevices = new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
             foreach (var dev in allDevices)
             {
                 if(dev.ID == deviceID)
@@ -243,7 +243,7 @@ namespace ArduinoVolumeLib
 
         public SoundDevice GetSoundDeviceBySessionDeviceID(string deviceID, uint sessionProcessID)
         {
-            var allDevices = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+            var allDevices = new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
             foreach (var dev in allDevices)
             {
                 if (deviceID == dev.ID)

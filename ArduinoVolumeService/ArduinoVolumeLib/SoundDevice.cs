@@ -15,6 +15,7 @@ namespace ArduinoVolumeLib
         private AudioSessionControl _session;
         // Reference so we can call the vol changed event on parent
         private DeviceController _deviceController;
+        private Guid gd = Guid.NewGuid();
 
         public SoundDevice(DeviceController deviceController, bool isMasterVolumeForDevice, MMDevice device, AudioSessionControl session)
         {
@@ -22,6 +23,7 @@ namespace ArduinoVolumeLib
             this._device = device;
             this._session = session;
             _deviceController = deviceController;
+            Console.WriteLine("Bound session : " + gd);
             _session.RegisterEventClient(this);
         }
 
@@ -35,6 +37,8 @@ namespace ArduinoVolumeLib
 
         private void AudioEndpointVolume_OnVolumeNotification(AudioVolumeNotificationData data)
         {
+            Console.WriteLine("Vol Changed session : " + gd + " vol "  +data.MasterVolume.ToString());
+
             _deviceController.VolChangedDevice(_device.FriendlyName, data.MasterVolume, data.Muted, GetDeviceUniqueID());
         }
 
@@ -190,6 +194,7 @@ namespace ArduinoVolumeLib
 
         public void OnVolumeChanged(float volume, bool isMuted)
         {
+            Console.WriteLine("Vol change gd:" + gd + " vol : " + volume.ToString());
             _deviceController.VolChangedDevice(GetSessionNameTitle(_session.GetProcessID), volume, isMuted, GetDeviceUniqueID());
         }
 
@@ -218,6 +223,8 @@ namespace ArduinoVolumeLib
 
         public void OnChannelVolumeChanged(uint channelCount, IntPtr newVolumes, uint channelIndex)
         {
+            Console.WriteLine("VolChanChann :" + gd);
+
             _deviceController.VolChangedDevice(_session.DisplayName, _session.SimpleAudioVolume.Volume, _session.SimpleAudioVolume.Mute, GetDeviceUniqueID());
         }
 
@@ -237,13 +244,14 @@ namespace ArduinoVolumeLib
         }
         public void Dispose()
         {
-            _device.Dispose();
             if(_session != null)
             {
+                Console.WriteLine("Dispose :" + gd);
                 _session.UnRegisterEventClient(this);
                 _session = null;
                 GC.Collect();
             }
+            _device.Dispose();
         }
     }
 }

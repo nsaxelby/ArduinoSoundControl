@@ -4,16 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BF168944-21CF-4376-865F-2B6629813BB1}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ArduinoVolumeLib</RootNamespace>
-    <AssemblyName>ArduinoVolumeLib</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectGuid>{CD4989B7-EE7F-49F1-BBD5-0D878600F0C3}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TestMultiBindings</RootNamespace>
+    <AssemblyName>TestMultiBindings</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -31,41 +33,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NAudio, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="NAudio">
       <HintPath>..\..\..\NAudio\NAudio\bin\Debug\net35\NAudio.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandFromArduinoEventArgs.cs" />
-    <Compile Include="CommandFromWebEventArgs.cs" />
-    <Compile Include="DeviceListResponseEventArgs.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="RequestBoundDevicesEventArgs.cs" />
-    <Compile Include="VolChangeCommandFromWebEventArgs.cs" />
-    <Compile Include="SerialCommandsEnum.cs" />
-    <Compile Include="DeviceController.cs" />
-    <Compile Include="DeviceVolChangedEventArgs.cs" />
-    <Compile Include="SerialConnector.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerialStateChangeEventArgs.cs" />
-    <Compile Include="SerialStateEnum.cs" />
-    <Compile Include="SoundDevice.cs" />
-    <Compile Include="Util.cs" />
-    <Compile Include="WebCommandEnum.cs" />
-    <Compile Include="WebConnectorStateChangeEventArgs.cs" />
-    <Compile Include="WebStateEnum.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
