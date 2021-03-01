@@ -248,6 +248,7 @@ namespace ArduinoVolumeLib
             {
                 Console.WriteLine("Dispose :" + gd);
                 _session.UnRegisterEventClient(this);
+                _session.Dispose();
                 _session = null;
                 GC.Collect();
             }
