@@ -12,7 +12,7 @@ namespace ArduinoVolumeLib
     {
         public bool IsMasterVolumeControlForDevice { get; set; }
         public MMDevice _device;
-        private readonly AudioSessionControl _session;
+        private AudioSessionControl _session;
         // Reference so we can call the vol changed event on parent
         private DeviceController _deviceController;
 
@@ -241,6 +241,8 @@ namespace ArduinoVolumeLib
             if(_session != null)
             {
                 _session.UnRegisterEventClient(this);
+                _session = null;
+                GC.Collect();
             }
         }
     }
