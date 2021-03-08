@@ -9,4 +9,4 @@ Here is a picture of it:
 
 ![alt text](https://blogdownloads.blob.core.windows.net/githubhost/firstpic1.jpg)
 
-Full details on this project and the hardware build to follow shortly on my home page: nsaxelby.com
+Full details on this project and the hardware build available here: https://nsaxelby.com/2021/03/01/arduino-soundcontrol/
