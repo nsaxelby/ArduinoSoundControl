@@ -16,6 +16,9 @@ namespace ArduinoVolumeLib
         public event EventHandler<DeviceVolChangedEventArgs> DeviceVolChangedEvent;
         public event EventHandler<DeviceListResponseEventArgs> DeviceListResponseEvent;
 
+        private DateTime lastEventRaisedDateTime;
+        private DeviceVolChangedEventArgs lastEventRaised;
+
         public DeviceController()
         {
             // Setup audio devices
@@ -281,24 +284,51 @@ namespace ArduinoVolumeLib
         protected virtual void RaiseDeviceListChangedEvent(DeviceListResponseEventArgs e)
         {
             EventHandler<DeviceListResponseEventArgs> raiseEvent = DeviceListResponseEvent;
-
-            if(raiseEvent != null)
+               
+            if (raiseEvent != null)
             {
                 raiseEvent(this, e);
             }
         }
 
+        private bool IsDuplicateEvent(DeviceVolChangedEventArgs newEvent)
+        {
+            if(newEvent.Equals(lastEventRaised))
+            {
+                if(lastEventRaisedDateTime.AddSeconds(1) >= DateTime.Now)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         protected virtual void RaiseDeviceVolChangedEvent(DeviceVolChangedEventArgs e)
         {
-            // Make a temporary copy of the event to avoid possibility of
-            // a race condition if the last subscriber unsubscribes
-            // immediately after the null check and before the event is raised.
-            EventHandler<DeviceVolChangedEventArgs> raiseEvent = DeviceVolChangedEvent;
-
-            // Event will be null if there are no subscribers
-            if (raiseEvent != null)
+            if (IsDuplicateEvent(e))
             {
-                raiseEvent(this, e);
+                Console.WriteLine("Duplicate event, surpressing");
+            }
+            else
+            {
+                // Make a temporary copy of the event to avoid possibility of
+                // a race condition if the last subscriber unsubscribes
+                // immediately after the null check and before the event is raised.
+                EventHandler<DeviceVolChangedEventArgs> raiseEvent = DeviceVolChangedEvent;
+                lastEventRaised = e;
+                lastEventRaisedDateTime = DateTime.Now;
+                // Event will be null if there are no subscribers
+                if (raiseEvent != null)
+                {
+                    raiseEvent(this, e);
+                }
             }
         }
     }
