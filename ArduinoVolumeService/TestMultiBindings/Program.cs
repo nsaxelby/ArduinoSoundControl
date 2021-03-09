@@ -1,6 +1,8 @@
 ﻿using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TestMultiBindings
 {
@@ -8,22 +10,32 @@ namespace TestMultiBindings
     {
         static void Main(string[] args)
         {
-            MMDeviceEnumerator deviceEnumerator = new MMDeviceEnumerator();
-            SoundDevice dev = null;
+            MainRunner mr = new MainRunner();
+            mr.Run();
+        }
+    }
+
+    public class MainRunner : IMMNotificationClient
+    {
+        public Dictionary<string, MMDevice> deviceList = new Dictionary<string, MMDevice>();
+        MMDeviceEnumerator deviceEnumerator = new MMDeviceEnumerator();
+        Dictionary<string, SoundSession> soundSessions = new Dictionary<string, SoundSession>();
+
+        public void Run()
+        {
+            AddAllDevicesAndSessions();
+
+            deviceEnumerator.RegisterEndpointNotificationCallback(this);
 
             Console.WriteLine("Started APP  - type 'end' to end or press enter to find chrome, and bind to it");
             while (Console.ReadLine() != "end")
             {
                 Console.WriteLine("Finding chrome");
-                var chrome = FindChrome(deviceEnumerator);
-                if (chrome != null)
+                bool resultfind = FindChrome();
+
+                if (resultfind)
                 {
-                    Console.WriteLine("Chrome found, binding to device");
-                    if(dev != null)
-                    {
-                        dev.Dispose();
-                    }
-                    dev = new SoundDevice(chrome);
+                    Console.WriteLine("Chrome found");
                 }
                 else
                 {
@@ -34,77 +46,203 @@ namespace TestMultiBindings
             }
         }
 
-        private static AudioSessionControl FindChrome(MMDeviceEnumerator deviceEnumerator)
+        private void AddAllDevicesAndSessions()
         {
-            var coreDevice = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-            for (int i = 0; i < coreDevice.AudioSessionManager.Sessions.Count; i++)
+            foreach(var devices in deviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active))
             {
-                var sess = coreDevice.AudioSessionManager.Sessions[i];
-                if (sess.IsSystemSoundsSession == false)
+                AddDeviceObj(devices);
+            }
+        }
+
+        private void AddDeviceObj(MMDevice device)
+        {
+            if (deviceList.ContainsKey(device.ID) == false)
+            {
+                var asm = device.AudioSessionManager;
+                for (int i = 0; i < asm.Sessions.Count; i++)
                 {
-                    if (sess.GetSessionIdentifier.Contains("chrome"))
+                    var session = asm.Sessions[i];
+                    if (session.IsSystemSoundsSession == false)
                     {
-                        return sess;
+                        AddSession(session);
                     }
                 }
+
+                asm.OnSessionCreated += AudioSessionManager_OnSessionCreated;
+                deviceList.Add(device.ID, device);
             }
-            return null;
+        }
+
+        private void AddSession(AudioSessionControl sessCont)
+        {
+            if(soundSessions.ContainsKey(sessCont.GetSessionIdentifier) == false)
+            {
+                Console.WriteLine("added session " + sessCont.GetSessionIdentifier + " dname: " + sessCont.DisplayName + " instanceid : " + sessCont.GetSessionInstanceIdentifier);
+                SoundSession ss = new SoundSession(sessCont, this);
+                soundSessions.Add(sessCont.GetSessionIdentifier, ss);
+            }
+        }
+
+        private void AudioSessionManager_OnSessionCreated(object sender, IAudioSessionControl newSession)
+        {
+            AudioSessionControl asc = new AudioSessionControl(newSession);
+            Console.WriteLine("New AudioSessionControl from OnSessionCreated");
+            AddSession(asc);
+        }
+
+        public void RemoveExpiredSession(string identifier)
+        {
+            if (soundSessions.ContainsKey(identifier) == true)
+            {
+                Console.WriteLine("removed session expired " + identifier);
+                soundSessions[identifier].Dispose();
+                soundSessions.Remove(identifier);
+            }
+        }
+
+        private void AddDeviceID(string id)
+        {
+            if (deviceList.ContainsKey(id) == false)
+            {
+                Console.WriteLine("added device " + id);
+                AddDeviceObj(deviceEnumerator.GetDevice(id));
+            }
+        }
+
+        private void RemoveDeviceID(string id)
+        {
+            if (deviceList.ContainsKey(id) == true)
+            {
+                Console.WriteLine("Removed device " + id);
+                var devToRemove = deviceList[id];
+
+                devToRemove.AudioSessionManager.Dispose();
+                devToRemove.Dispose();
+                
+                deviceList.Remove(id);
+                devToRemove = null;
+                GC.Collect();
+            }
+        }
+
+        private bool FindChrome()
+        {
+            foreach(var sess in soundSessions)
+            {
+                if (sess.Value.GetIdentifier().Contains("chrome"))
+                {
+                    Console.WriteLine("Found chrome in other sessions");
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void OnDefaultDeviceChanged(DataFlow flow, Role role, string defaultDeviceId)
+        {
+            Console.WriteLine("Def dev changed");
+            AddDeviceID(defaultDeviceId);
+        }
+
+        public void OnDeviceAdded(string pwstrDeviceId)
+        {
+            Console.WriteLine("Device added");
+            AddDeviceID(pwstrDeviceId);
+        }
+
+        public void OnDeviceRemoved(string deviceId)
+        {
+            Console.WriteLine("Device demoved");
+            RemoveDeviceID(deviceId);
+        }
+
+        public void OnDeviceStateChanged(string deviceId, DeviceState newState)
+        {
+            if (newState != DeviceState.Active)
+            {
+                RemoveDeviceID(deviceId);
+            }
+            else if(newState == DeviceState.Active)
+            {
+                AddDeviceID(deviceId);
+            }
+        }
+
+        public void OnPropertyValueChanged(string pwstrDeviceId, PropertyKey key)
+        {
+
         }
     }
 
-    public class SoundDevice : IAudioSessionEventsHandler
+    public class SoundSession : IAudioSessionEventsHandler
     {
 
         private AudioSessionControl _session;
+        private MainRunner _parent;
+        private string _sessionOriginalID;
 
-        public SoundDevice(AudioSessionControl sess)
+        public SoundSession(AudioSessionControl sess, MainRunner parent)
         {
             _session = sess;
+            _sessionOriginalID = sess.GetSessionIdentifier;
+            _parent = parent;
             _session.RegisterEventClient(this);
+        }
+
+        public string GetIdentifier()
+        {
+            return _session.GetSessionIdentifier;
         }
         public void OnChannelVolumeChanged(uint channelCount, IntPtr newVolumes, uint channelIndex)
         {
-            throw new NotImplementedException();
         }
 
         public void OnDisplayNameChanged(string displayName)
         {
-            throw new NotImplementedException();
         }
 
         public void OnGroupingParamChanged(ref Guid groupingId)
         {
-            throw new NotImplementedException();
         }
 
         public void OnIconPathChanged(string iconPath)
         {
-            throw new NotImplementedException();
         }
 
         public void OnSessionDisconnected(AudioSessionDisconnectReason disconnectReason)
         {
-            throw new NotImplementedException();
+            if (_session != null)
+            {
+                Console.WriteLine("Session disconnected removing");
+                _session.UnRegisterEventClient(this);
+                _parent.RemoveExpiredSession(_sessionOriginalID);
+                _session = null;
+            }
         }
 
         public void OnStateChanged(AudioSessionState state)
         {
-            throw new NotImplementedException();
+            if (state == AudioSessionState.AudioSessionStateExpired)
+            {
+                if (_session != null)
+                {
+                    Console.WriteLine("Sess expired session removing");
+
+                    _session.UnRegisterEventClient(this);
+                    _parent.RemoveExpiredSession(_sessionOriginalID);
+                }
+            }
         }
 
         public void OnVolumeChanged(float volume, bool isMuted)
         {
-            Console.WriteLine("Vol changed to :" + volume.ToString());
+            Console.WriteLine("Vol changed to :" + volume.ToString() + "For Session : " + _session.GetSessionIdentifier);
         }
 
         public void Dispose()
         {
-            if(_session != null)
-            {
-                _session.UnRegisterEventClient(this);
-                // I think Dispose calls UnRegisterEventClient anyway.. But belt and braces
-                _session.Dispose();
-            }
+            _session.Dispose();
+            _session = null;
         }
     }
 }

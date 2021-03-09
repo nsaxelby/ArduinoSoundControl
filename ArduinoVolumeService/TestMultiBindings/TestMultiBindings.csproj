@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NAudio">
-      <HintPath>..\..\..\NAudio\NAudio\bin\Debug\net35\NAudio.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,6 +48,28 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\NAudio\NAudio.Asio\NAudio.Asio.csproj">
+      <Project>{e8981a3a-6851-40ea-96aa-5dde25de9618}</Project>
+      <Name>NAudio.Asio</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\NAudio\NAudio.Core\NAudio.Core.csproj">
+      <Project>{5bfaf13b-0823-4a5d-a9cb-a894ee53e2b2}</Project>
+      <Name>NAudio.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\NAudio\NAudio.Midi\NAudio.Midi.csproj">
+      <Project>{279f8cb0-a9fc-459e-baf3-05b7c6eee0f7}</Project>
+      <Name>NAudio.Midi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\NAudio\NAudio.Wasapi\NAudio.Wasapi.csproj">
+      <Project>{d432bb11-2355-4143-baa5-008812d3e82c}</Project>
+      <Name>NAudio.Wasapi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\NAudio\NAudio\NAudio.csproj">
+      <Project>{da4f02e3-0b5e-42cd-b8d9-5583fa51d66e}</Project>
+      <Name>NAudio</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
