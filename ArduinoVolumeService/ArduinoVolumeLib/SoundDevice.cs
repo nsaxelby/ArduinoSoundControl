@@ -237,12 +237,24 @@ namespace ArduinoVolumeLib
         }
         public void Dispose()
         {
-            _device.Dispose();
-            if(_session != null)
+            try
             {
-                _session.UnRegisterEventClient(this);
-                _session = null;
-                GC.Collect();
+                _device.AudioEndpointVolume.OnVolumeNotification -= AudioEndpointVolume_OnVolumeNotification;
+                _device = null;
+                
+            }
+            catch(Exception exc)
+            {
+                Console.WriteLine("Problem disposing Sound Device " + exc.Message);
+            }
+            finally
+            {
+                if (_session != null)
+                {
+                    _session.UnRegisterEventClient(this);
+                    _session = null;
+                    GC.Collect();
+                }
             }
         }
     }

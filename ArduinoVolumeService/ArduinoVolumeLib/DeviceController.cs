@@ -1,11 +1,12 @@
 ﻿using NAudio.CoreAudioApi;
+using NAudio.CoreAudioApi.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ArduinoVolumeLib
 {
-    public class DeviceController
+    public class DeviceController : IMMNotificationClient
     {
         // I only have 3 rotary encoders
         SoundDevice[] _devices = new SoundDevice[3];
@@ -23,6 +24,7 @@ namespace ArduinoVolumeLib
         {
             // Setup audio devices
             deviceEnumerator = new MMDeviceEnumerator();
+            deviceEnumerator.RegisterEndpointNotificationCallback(this);
 
             // Always initiate Encoder 1 to Master Volume of the default audio device
             if (deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia) != null)
@@ -330,6 +332,37 @@ namespace ArduinoVolumeLib
                     raiseEvent(this, e);
                 }
             }
+        }
+
+        public void OnDeviceStateChanged(string deviceId, DeviceState newState)
+        {
+            Console.WriteLine("Device State chaned " + deviceId + " state : " + newState.ToString());
+        }
+
+        public void OnDeviceAdded(string pwstrDeviceId)
+        {
+            // Intentionally Blank
+            Console.WriteLine("Device Added " + pwstrDeviceId);
+        }
+
+        public void OnDeviceRemoved(string deviceId)
+        {
+            // Intentionally Blank
+            Console.WriteLine("Device removed " + deviceId);
+        }
+
+        public void OnDefaultDeviceChanged(DataFlow flow, Role role, string defaultDeviceId)
+        {
+            if (flow == DataFlow.Render && role == Role.Multimedia)
+            {
+                Console.WriteLine("Default device changed to :" + defaultDeviceId);
+                BindEncoderToDevice(1, defaultDeviceId);
+            }
+        }
+
+        public void OnPropertyValueChanged(string pwstrDeviceId, PropertyKey key)
+        {
+            // Intentionally Blank
         }
     }
 }
