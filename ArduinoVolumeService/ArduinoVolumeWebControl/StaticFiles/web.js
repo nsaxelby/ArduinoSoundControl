@@ -1,6 +1,7 @@
-﻿$(document).ready(function ()
+﻿var enocdesArr;
+$(document).ready(function ()
 {
-	var enocdesArr = [
+	enocdesArr = [
 		$('#encoder1').slider({
 			reversed: true
 		}),
@@ -17,23 +18,7 @@
     var hub = $.connection.webControlHub;
 
     // Create a function that the hub can call to broadcast messages.
-	hub.client.updateVol = function (encnumbers, muted, volume) {
-		for (var i = 0; i < encnumbers.length; i++) {
-			var encnumber = encnumbers[i];
-			var muteButonName = "#mutebutton".concat(encnumber);
-			var encoderNumber = "#encoder".concat(encnumber);
-
-			if (muted == true) {
-				$(encoderNumber).addClass("muted-bar");
-				$(muteButonName).prop('value', 'Unmute');
-			}
-			else {
-				$(encoderNumber).removeClass("muted-bar");
-				$(muteButonName).prop('value', 'Mute');
-			}
-			enocdesArr[encnumber - 1].slider('setValue', volume);
-        }
-	};
+	hub.client.updateVol = updateVolumeBarForManyEncoders;
 
 	hub.client.updateDevices = function (json) {
 		for (var i = 1; i <= 3; i++)
@@ -44,6 +29,7 @@
 				for (var g = 0; g < entry.EncoderNumbers.length; g++) {
 					if (entry.EncoderNumbers[g] === i) {
 						$('#encoderSelectButton'.concat(i)).html(entry.Name.concat(' <span class="caret"></span>'));
+						updateVolumeBarForEncoder(i, entry.CurrentMuted, entry.CurrentVolume);
                     }
                 }
 
@@ -54,6 +40,7 @@
 					for (var k = 0; k < ssentry.EncoderNumbers.length; k++) {
 						if (ssentry.EncoderNumbers[k] === i) {
 							$('#encoderSelectButton'.concat(i)).html(ssentry.Name.concat(' <span class="caret"></span>'));
+							updateVolumeBarForEncoder(i, ssentry.CurrentMuted, ssentry.CurrentVolume);
                         }
                     }
 					$('#deviceMenu'.concat(i)).append('<li><a href="#" onclick="rebindEncoderSession(' + i + ",'" + entry.DeviceID + "'," + ssentry.SoundSessionProcessID + ");" + '"\>' + entry.Name + " - " + ssentry.Name + "</a></li>");
@@ -118,4 +105,26 @@ function rebindEncoderSession(encoderNumber, deviceID, sessionID) {
 	// Declare a proxy to reference the hub.
 	var hub = $.connection.webControlHub;
 	hub.server.rebindEncoderToSession(encoderNumber, deviceID, sessionID);
+}
+
+function updateVolumeBarForManyEncoders(encnumbers, muted, volume) {
+	for (var i = 0; i < encnumbers.length; i++) {
+		var encnumber = encnumbers[i];
+		updateVolumeBarForEncoder(encnumber, muted, volume);
+	}
+}
+
+function updateVolumeBarForEncoder(encnumber, muted, volume) {
+	var muteButonName = "#mutebutton".concat(encnumber);
+	var encoderNumber = "#encoder".concat(encnumber);
+
+	if (muted == true) {
+		$(encoderNumber).addClass("muted-bar");
+		$(muteButonName).prop('value', 'Unmute');
+	}
+	else {
+		$(encoderNumber).removeClass("muted-bar");
+		$(muteButonName).prop('value', 'Mute');
+	}
+	enocdesArr[encnumber - 1].slider('setValue', volume);
 }

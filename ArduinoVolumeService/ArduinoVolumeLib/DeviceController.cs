@@ -177,13 +177,13 @@ namespace ArduinoVolumeLib
             var allDevices = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
             foreach(var dev in allDevices)
             {
-                DeviceItem di = new DeviceItem(dev.DeviceFriendlyName, dev.ID, GetDeviceEncoderNumberByID(dev.ID));
+                DeviceItem di = new DeviceItem(dev.DeviceFriendlyName, dev.ID, GetDeviceEncoderNumberByID(dev.ID), dev.AudioEndpointVolume.MasterVolumeLevelScalar * 100, dev.AudioEndpointVolume.Mute);
                 for(int i = 0; i < dev.AudioSessionManager.Sessions.Count; i++)
                 {
                     var sess = dev.AudioSessionManager.Sessions[i];
                     if(sess.IsSystemSoundsSession == false)
                     {
-                        SoundSessionItem sessItem = new SoundSessionItem(GetSessionNameTitle(sess.GetProcessID), sess.GetProcessID, GetDeviceEncoderNumberByID(sess.GetProcessID.ToString()));
+                        SoundSessionItem sessItem = new SoundSessionItem(GetSessionNameTitle(sess.GetProcessID), sess.GetProcessID, GetDeviceEncoderNumberByID(sess.GetProcessID.ToString()), sess.SimpleAudioVolume.Volume * 100, sess.SimpleAudioVolume.Mute);
                         di.SoundSessions.Add(sessItem);
                     }
                 }
