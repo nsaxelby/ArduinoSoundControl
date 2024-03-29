@@ -3,6 +3,7 @@ using NAudio.CoreAudioApi.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 
 namespace ArduinoVolumeLib
 {
@@ -20,27 +21,49 @@ namespace ArduinoVolumeLib
         private DateTime lastEventRaisedDateTime;
         private DeviceVolChangedEventArgs lastEventRaised;
 
+        private Timer backgroundChromeFinder;
+
         public DeviceController()
         {
             // Setup audio devices
             deviceEnumerator = new MMDeviceEnumerator();
             deviceEnumerator.RegisterEndpointNotificationCallback(this);
 
-            // Always initiate Encoder 1 to Master Volume of the default audio device
-            if (deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia) != null)
+            if (deviceEnumerator.HasDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia))
             {
-                _devices[0] = new SoundDevice(this, true, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia));
+                // Always initiate Encoder 1 to Master Volume of the default audio device
+                if (deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia) != null)
+                {
+                    _devices[0] = new SoundDevice(this, true, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia));
+                }
+                // Try initiate always to Microphone if we find one
+                if (deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia) != null)
+                {
+                    _devices[1] = new SoundDevice(this, true, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia));
+                }
             }
-            // Try initiate always to Microphone if we find one
-            if (deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia) != null)
-            {
-                _devices[1] = new SoundDevice(this, true, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia));
-            }
+
+            backgroundChromeFinder = new Timer(FindChromeOrSpotify, null, 1000, 15000);
+        }
+
+        private void FindChromeOrSpotify(Object stateInfo)
+        {
             // Find Chrome as default..
             var sessionChrome = FindChrome(deviceEnumerator);
             if (sessionChrome != null)
             {
-                _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia), sessionChrome);
+                if (_devices[2] != null)
+                {
+                    if (_devices[2].GetDeviceDisplayName().Contains("chrome") == false)
+                    {
+                        _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia), sessionChrome);
+
+                    }
+                }
+                else
+                {
+                    _devices[2] = new SoundDevice(this, false, deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia), sessionChrome);
+                }
             }
             else
             {
@@ -55,15 +78,18 @@ namespace ArduinoVolumeLib
 
         private AudioSessionControl FindSpotify(MMDeviceEnumerator deviceEnumerator)
         {
-            var coreDevice = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-            for (int i = 0; i < coreDevice.AudioSessionManager.Sessions.Count; i++)
+            if (deviceEnumerator.HasDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia))
             {
-                var sess = coreDevice.AudioSessionManager.Sessions[i];
-                if (sess.IsSystemSoundsSession == false)
+                var coreDevice = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+                for (int i = 0; i < coreDevice.AudioSessionManager.Sessions.Count; i++)
                 {
-                    if (sess.GetSessionIdentifier.Contains("Spotify"))
+                    var sess = coreDevice.AudioSessionManager.Sessions[i];
+                    if (sess.IsSystemSoundsSession == false)
                     {
-                        return sess;
+                        if (sess.GetSessionIdentifier.Contains("Spotify"))
+                        {
+                            return sess;
+                        }
                     }
                 }
             }
@@ -72,15 +98,18 @@ namespace ArduinoVolumeLib
 
         private AudioSessionControl FindChrome(MMDeviceEnumerator deviceEnumerator)
         {
-            var coreDevice = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-            for (int i = 0; i < coreDevice.AudioSessionManager.Sessions.Count; i++)
+            if (deviceEnumerator.HasDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia))
             {
-                var sess = coreDevice.AudioSessionManager.Sessions[i];
-                if(sess.IsSystemSoundsSession == false)
+                var coreDevice = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+                for (int i = 0; i < coreDevice.AudioSessionManager.Sessions.Count; i++)
                 {
-                    if(sess.GetSessionIdentifier.Contains("chrome"))
+                    var sess = coreDevice.AudioSessionManager.Sessions[i];
+                    if (sess.IsSystemSoundsSession == false)
                     {
-                        return sess;
+                        if (sess.GetSessionIdentifier.Contains("chrome"))
+                        {
+                            return sess;
+                        }
                     }
                 }
             }
