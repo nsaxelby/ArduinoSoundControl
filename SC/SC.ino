@@ -38,7 +38,7 @@ void setup() {
   
   // Set Contrast of LCD to white
   pinMode(LCD_Contrast_pin, OUTPUT);
-  analogWrite(LCD_Contrast_pin, 70);
+  analogWrite(LCD_Contrast_pin, 50);
   
   // Set encoder pins as inputs 1
   pinMode(Rot_1_SW, INPUT);
@@ -69,6 +69,7 @@ void loop() {
   if (Serial.available())
   {
     char ch = Serial.read();
+
     if(ch == ';')
     { 
       processCommand(cmdString);
